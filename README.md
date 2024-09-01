@@ -5,11 +5,7 @@
 
 A chatbot that plays Call of Cthulhu (CoC) with you, powered by AI.
 
-
-<img width="1176" alt="image" src="https://github.com/user-attachments/assets/f47f9b62-c93c-4933-a167-03cbe079c29e">
-
-<img width="1754" alt="image" src="https://github.com/user-attachments/assets/0a83a329-04c8-45d2-98e1-c6c33a84c065">
-
+<img width="2317" alt="image" src="https://github.com/user-attachments/assets/4617c031-72f3-4915-8582-fd8700b0f725">
 
 ## Usage
 
