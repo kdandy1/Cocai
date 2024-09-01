@@ -59,8 +59,10 @@ chat_memory = ChatMemoryBuffer.from_defaults(
 from llama_index.core import Settings
 from llama_index.llms.ollama import Ollama
 
+# This LLM is used by the Agent itself.
 Settings.llm = Ollama(
-    model="qwen2:7b",
+    # https://ollama.com/library/qwen2:7b-instruct
+    model="qwen2:7b-instruct",
     request_timeout=60,  # secs
     # Uncomment the following line to use the LLM server running on my gaming PC.
     # base_url="http://10.147.20.237:11434",
@@ -75,14 +77,29 @@ Settings.llm = Ollama(
         "seed": 42,
     },
 )
+
+# This LLM is used by tools for its latent knowledge.
+llm_for_text_completion = Ollama(
+    # https://ollama.com/library/qwen2:7b-text
+    model="qwen2:7b-text",
+    request_timeout=60,  # secs
+    # Uncomment the following line to use the LLM server running on my gaming PC.
+    # base_url="http://10.147.20.237:11434",
+    streaming=True,
+    temperature=0.01,
+    additional_kwargs={
+        "seed": 42,
+    },
+)
+
 from llama_index.embeddings.ollama import OllamaEmbedding
 
 Settings.embed_model = OllamaEmbedding(
+    # https://ollama.com/library/nomic-embed-text
     model_name="nomic-embed-text",
     # Uncomment the following line to use the LLM server running on my gaming PC.
     # base_url="http://10.147.20.237:11434",
 )
-
 
 # ============= End of the code block for wiring on to models. =============
 
@@ -116,20 +133,27 @@ def create_callback_manager(should_use_chainlit: bool = True) -> CallbackManager
 
 
 from llama_index.core.agent import AgentRunner
+from llama_index.core.llms.utils import LLMType
 
 
 def create_agent(
     should_use_chainlit: bool,
     should_override_system_prompt: bool = True,
     max_action_steps: int = 5,
+    llm_for_text_completion: LLMType = llm_for_text_completion,
 ) -> AgentRunner:
-
     # Needed for "Retrieved the following sources" to show up on Chainlit.
     Settings.callback_manager = create_callback_manager(should_use_chainlit)
 
-    from tool_for_suggesting_choices import tool as suggest_choices_tool
+    from llama_index.core.tools import FunctionTool
 
-    all_tools = [suggest_choices_tool]
+    from tools import ToolForSuggestingChoices
+
+    all_tools = [
+        FunctionTool.from_defaults(
+            ToolForSuggestingChoices(llm=llm_for_text_completion).suggest_choices,
+        )
+    ]
 
     from llama_index.core.agent import ReActAgent
 
