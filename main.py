@@ -20,6 +20,7 @@ from rich.console import Console
 from rich.logging import RichHandler
 from rich.traceback import install
 
+from my_monkey_patch import ChainlitCallbackHandler
 from tools import ToolForSuggestingChoices, roll_a_dice, roll_a_skill
 
 console = Console()
@@ -77,7 +78,11 @@ def create_callback_manager(should_use_chainlit: bool = True) -> CallbackManager
         OpenInferenceTraceCallbackHandler(),
     ]
     if should_use_chainlit:
-        callback_handlers.append(cl.LlamaIndexCallbackHandler())
+        callback_handlers.append(
+            # TODO: When https://github.com/Chainlit/chainlit/pull/1285 is merged,
+            #  change this back to `cl.LlamaIndexCallbackHandler()`.
+            ChainlitCallbackHandler()
+        )
     return CallbackManager(callback_handlers)
 
 
