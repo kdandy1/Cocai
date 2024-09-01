@@ -39,8 +39,8 @@ import phoenix as px
 
 px.launch_app()
 
-from llama_index.core.storage.chat_store import SimpleChatStore
 from llama_index.core.memory import ChatMemoryBuffer
+from llama_index.core.storage.chat_store import SimpleChatStore
 
 # https://docs.llamaindex.ai/en/stable/module_guides/storing/chat_stores/#simplechatstore
 try:
@@ -52,6 +52,40 @@ chat_memory = ChatMemoryBuffer.from_defaults(
     chat_store=chat_store,
     chat_store_key="user1",
 )
+
+# ============= Beginning of the code block for wiring on to models. =============
+
+
+from llama_index.core import Settings
+from llama_index.llms.ollama import Ollama
+
+Settings.llm = Ollama(
+    model="qwen2:7b",
+    request_timeout=60,  # secs
+    # Uncomment the following line to use the LLM server running on my gaming PC.
+    # base_url="http://10.147.20.237:11434",
+    streaming=True,
+    temperature=0.01,
+    additional_kwargs={
+        "stop": [
+            "<|im_start|>",
+            "<|im_end|>",
+            "Observation:",
+        ],
+        "seed": 42,
+    },
+)
+from llama_index.embeddings.ollama import OllamaEmbedding
+
+Settings.embed_model = OllamaEmbedding(
+    model_name="nomic-embed-text",
+    # Uncomment the following line to use the LLM server running on my gaming PC.
+    # base_url="http://10.147.20.237:11434",
+)
+
+
+# ============= End of the code block for wiring on to models. =============
+
 
 from llama_index.core.callbacks import CallbackManager
 
@@ -89,36 +123,9 @@ def create_agent(
     should_override_system_prompt: bool = True,
     max_action_steps: int = 5,
 ) -> AgentRunner:
-    from llama_index.core import Settings
 
     # Needed for "Retrieved the following sources" to show up on Chainlit.
     Settings.callback_manager = create_callback_manager(should_use_chainlit)
-
-    from llama_index.llms.ollama import Ollama
-
-    Settings.llm = Ollama(
-        model="qwen2:7b",
-        request_timeout=60,  # secs
-        # Uncomment the following line to use the LLM server running on my gaming PC.
-        # base_url="http://10.147.20.237:11434",
-        streaming=True,
-        temperature=0.01,
-        additional_kwargs={
-            "stop": [
-                "<|im_start|>",
-                "<|im_end|>",
-                "Observation:",
-            ],
-            "seed": 42,
-        },
-    )
-    from llama_index.embeddings.ollama import OllamaEmbedding
-
-    Settings.embed_model = OllamaEmbedding(
-        model_name="nomic-embed-text",
-        # Uncomment the following line to use the LLM server running on my gaming PC.
-        # base_url="http://10.147.20.237:11434",
-    )
 
     from tool_for_suggesting_choices import tool as suggest_choices_tool
 
@@ -153,10 +160,12 @@ def create_agent(
 async def factory():
     cl.user_session.set("agent", create_agent(should_use_chainlit=True))
 
+
 @cl.on_chat_end
 async def cleanup():
     logger.warning("Interrupted. Persisting chat storage.")
     chat_store.persist(persist_path="chat_store.json")
+
 
 @cl.on_message
 async def main(message: cl.Message):
@@ -179,8 +188,8 @@ async def main(message: cl.Message):
 
 
 if __name__ == "__main__":
+    # This block
     agent = create_agent(should_use_chainlit=False)
-
     try:
         agent.chat_repl()
     except KeyboardInterrupt:
