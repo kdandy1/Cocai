@@ -1,3 +1,4 @@
+import logging
 import random
 
 # How to use enums in Python: https://docs.python.org/3/howto/enum.html
@@ -80,6 +81,8 @@ def __roll_a_skill(
     Roll a skill check and return the result.
     """
     result = roll_a_dice(n=100)
+    logger = logging.getLogger("__roll_a_skill")
+    logger.info(f"result: {result}")
     if result == 100:
         return DegreesOfSuccess.FUMBLE
     if result == 1:
