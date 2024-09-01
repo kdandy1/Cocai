@@ -1,9 +1,6 @@
-from pydantic import Field
-
-
 from llama_index.core import Settings
 from llama_index.core.tools import FunctionTool
-
+from pydantic import Field
 
 with open("prompts/choices_prompt.md") as f:
     CHOICES_PROMPT = f.read()
