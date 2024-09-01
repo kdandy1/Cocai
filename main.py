@@ -182,9 +182,9 @@ async def main(message: cl.Message):
     # > asynchronous function that will run the original function in a separate thread. This is useful to run
     # > long running synchronous tasks without blocking the event loop.
     # (https://docs.chainlit.io/api-reference/make-async#make-async)
-    # But I think we can just use the async function directly.
+    # I thought we can just use `agent.achat` directly, but it would cause `<ContextVar name='chainlit' at 0x...>`.
     # TODO: streaming seems broken. Why?
-    response = await agent.achat(message.content)
+    response = await cl.make_async(agent.chat)(message.content)
     response_message = cl.Message(content="")
     response_message.content = response.response
     await response_message.send()
