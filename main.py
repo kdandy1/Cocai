@@ -39,6 +39,19 @@ import phoenix as px
 
 px.launch_app()
 
+from llama_index.core.storage.chat_store import SimpleChatStore
+from llama_index.core.memory import ChatMemoryBuffer
+
+# https://docs.llamaindex.ai/en/stable/module_guides/storing/chat_stores/#simplechatstore
+try:
+    chat_store = SimpleChatStore.from_persist_path(persist_path="chat_store.json")
+except Exception as e:
+    logger.warning(f"Failed to load chat store from file: {e}, using a new one.")
+    chat_store = SimpleChatStore()
+chat_memory = ChatMemoryBuffer.from_defaults(
+    chat_store=chat_store,
+    chat_store_key="user1",
+)
 
 from llama_index.core.callbacks import CallbackManager
 
@@ -140,6 +153,10 @@ def create_agent(
 async def factory():
     cl.user_session.set("agent", create_agent(should_use_chainlit=True))
 
+@cl.on_chat_end
+async def cleanup():
+    logger.warning("Interrupted. Persisting chat storage.")
+    chat_store.persist(persist_path="chat_store.json")
 
 @cl.on_message
 async def main(message: cl.Message):
@@ -162,19 +179,6 @@ async def main(message: cl.Message):
 
 
 if __name__ == "__main__":
-    from llama_index.core.storage.chat_store import SimpleChatStore
-    from llama_index.core.memory import ChatMemoryBuffer
-
-    # https://docs.llamaindex.ai/en/stable/module_guides/storing/chat_stores/#simplechatstore
-    try:
-        chat_store = SimpleChatStore.from_persist_path(persist_path="chat_store.json")
-    except Exception as e:
-        logger.warning(f"Failed to load chat store from file: {e}, using a new one.")
-        chat_store = SimpleChatStore()
-    chat_memory = ChatMemoryBuffer.from_defaults(
-        chat_store=chat_store,
-        chat_store_key="user1",
-    )
     agent = create_agent(should_use_chainlit=False)
 
     try:
