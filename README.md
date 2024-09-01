@@ -7,7 +7,7 @@ A chatbot that plays Call of Cthulhu (CoC) with you, powered by AI.
 
 一个陪你玩《克苏鲁的呼唤》（CoC）的聊天机器人，由AI驱动。
 
-<img width="973" alt="image" src="https://github.com/user-attachments/assets/a8d2df9a-84b3-4c86-85ce-ade6469b213b">
+<img width="1176" alt="image" src="https://github.com/user-attachments/assets/f47f9b62-c93c-4933-a167-03cbe079c29e">
 
 Inspired by the many impressive CoC replay videos on Bilibili, I'm programming this chatbot to operate in Chinese.
 
