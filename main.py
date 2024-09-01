@@ -1,127 +1,184 @@
 #!/usr/bin/env python
 import logging
+import sys
 
-# TODO: Chainlit doesn't yet work with LlamaIndex 0.10.x. https://github.com/Chainlit/chainlit/issues/752
 import chainlit as cl
-from llama_index.core.callbacks import CallbackManager, LlamaDebugHandler
+
+# If Python’s builtin readline module is previously loaded, elaborate line editing and history features will be available.
+# https://rich.readthedocs.io/en/stable/console.html#input
+from rich.console import Console
 from rich.logging import RichHandler
+
+console = Console()
 
 # https://rich.readthedocs.io/en/latest/logging.html#handle-exceptions
 logging.basicConfig(
-    # level=logging.DEBUG,
+    level=logging.INFO,
     format="%(message)s",
     datefmt="[%X]",
-    handlers=[RichHandler(rich_tracebacks=True)],
+    handlers=[RichHandler(rich_tracebacks=True, console=console)],
+    # This function does nothing if the root logger already has handlers configured,
+    # unless the keyword argument force is set to True.
+    # https://docs.python.org/3/library/logging.html#logging.basicConfig
+    force=True,
 )
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 # https://rich.readthedocs.io/en/stable/traceback.html#traceback-handler
 from rich.traceback import install
 
-install(show_locals=True)
+logger.debug("Installing rich traceback handler.")
+old_traceback_handler = install(show_locals=True, console=console)
+logger.debug(
+    f"The global traceback handler has been swapped from {old_traceback_handler} to {sys.excepthook}."
+)
 
 # "Phoenix can display in real time the traces automatically collected from your LlamaIndex application."
 # https://docs.llamaindex.ai/en/stable/module_guides/observability/observability.html
-# Or https://docs.arize.com/phoenix/integrations/llamaindex
 import phoenix as px
 
 px.launch_app()
 
-from llama_index.core import set_global_handler
 
-set_global_handler("arize_phoenix")
+from llama_index.core.callbacks import CallbackManager
 
 
-def create_callback_manager(should_use_chainlit: bool = True):
-    callback_handlers = [LlamaDebugHandler()]
+def create_callback_manager(should_use_chainlit: bool = True) -> CallbackManager:
+    from llama_index.core.callbacks import LlamaDebugHandler
+
+    # Phoenix can display in real time the traces automatically collected from your LlamaIndex application.
+    # The one-click way is as follows:
+    # ```
+    # llama_index.core.set_global_handler("arize_phoenix")
+    # from llama_index.callbacks.arize_phoenix import (
+    #     arize_phoenix_callback_handler,
+    # )
+    # ```
+    # But I prefer to do it manually, so that I can put all callback handlers in one place.
+    from phoenix.trace.llama_index import OpenInferenceTraceCallbackHandler
+
+    debug_logger = logging.getLogger("debug")
+    debug_logger.setLevel(logging.DEBUG)
+    callback_handlers = [
+        LlamaDebugHandler(logger=debug_logger),
+        OpenInferenceTraceCallbackHandler(),
+    ]
     if should_use_chainlit:
         callback_handlers.append(cl.LlamaIndexCallbackHandler())
     return CallbackManager(callback_handlers)
 
 
-from llama_index.core.agent import ReActAgent
+from llama_index.core.agent import AgentRunner
 
 
 def create_agent(
     should_use_chainlit: bool,
-    is_general_purpose: bool = True,
-) -> ReActAgent:
-    callback_manager = create_callback_manager(should_use_chainlit)
+    should_override_system_prompt: bool = True,
+    max_action_steps: int = 5,
+) -> AgentRunner:
     from llama_index.core import Settings
+
+    # Needed for "Retrieved the following sources" to show up on Chainlit.
+    Settings.callback_manager = create_callback_manager(should_use_chainlit)
+
     from llama_index.llms.ollama import Ollama
 
-    # https://docs.llamaindex.ai/en/stable/examples/llm/localai.html
-    # But, instead of LocalAI, I'm using "LM Studio".
     Settings.llm = Ollama(
-        model="zephyr:7b-beta",
-        timeout=600,  # secs
+        model="qwen2:7b",
+        request_timeout=60,  # secs
+        # Uncomment the following line to use the LLM server running on my gaming PC.
+        # base_url="http://10.147.20.237:11434",
         streaming=True,
-        callback_manager=callback_manager,
-        additional_kwargs={"stop": ["Observation:"]},
+        temperature=0.01,
+        additional_kwargs={
+            "stop": [
+                "<|im_start|>",
+                "<|im_end|>",
+                "Observation:",
+            ],
+            "seed": 42,
+        },
     )
-    # `ServiceContext.from_defaults` doesn't take callback manager from the LLM by default.
-    # TODO: Check if this is still the case with `Settings` in 0.10.x.
-    Settings.callback_manager = callback_manager
-    # https://docs.llamaindex.ai/en/stable/module_guides/models/embeddings.html#local-embedding-models
-    # HuggingFaceEmbedding requires transformers and PyTorch to be installed.
-    # Run `pip install transformers torch`.
-    Settings.embed_model = "local"
+    from llama_index.embeddings.ollama import OllamaEmbedding
 
-    from tool_for_backburner import make_tools as make_tools_for_backburner
-    from tool_for_my_notes import make_tool as make_tool_for_my_notes
-    from tool_for_wikipedia import make_tool as make_tool_for_wikipedia
+    Settings.embed_model = OllamaEmbedding(
+        model_name="nomic-embed-text",
+        # Uncomment the following line to use the LLM server running on my gaming PC.
+        # base_url="http://10.147.20.237:11434",
+    )
 
-    all_tools = make_tools_for_backburner()
-    if is_general_purpose:
-        all_tools += [
-            make_tool_for_my_notes(),
-            make_tool_for_wikipedia(),
-        ]
-    # TODO: When we have too many tools for the Agent to comprehend in one go (In other words, the sheer amounts of two
-    #  descriptions has taken most of the context window.), try `custom_obj_retriever` in
-    #  https://docs.llamaindex.ai/en/latest/examples/agent/multi_document_agents-v1.html.
-    #  This will allow us to retrieve the tools, instead of having to hardcode them in the code.
+    from tool_for_suggesting_choices import tool as suggest_choices_tool
 
-    from my_react_chat_formatter import MyReActChatFormatter
+    all_tools = [suggest_choices_tool]
 
-    chat_formatter = MyReActChatFormatter()
-    return ReActAgent.from_tools(
+    from llama_index.core.agent import ReActAgent
+
+    agent = ReActAgent.from_tools(
         tools=all_tools,
         verbose=True,
-        react_chat_formatter=chat_formatter,
-        callback_manager=callback_manager,
+        # x2: An observation step also takes as an iteration.
+        # +1: The final output reasoning step needs to take a spot.
+        memory=chat_memory,
     )
+    if should_override_system_prompt:
+        # Override the default system prompt for ReAct chats.
+        with open("prompts/system_prompt.md") as f:
+            MY_SYSTEM_PROMPT = f.read()
+        my_system_prompt = MY_SYSTEM_PROMPT.replace(
+            # TODO: Use `PromptTemplate.partial_format`. Today, it's not working.
+            "{allowance}",
+            str(max_action_steps),
+        )
+        from llama_index.core import PromptTemplate
+
+        system_prompt = PromptTemplate(my_system_prompt)
+        agent.update_prompts({"agent_worker:system_prompt": system_prompt})
+    return agent
 
 
 @cl.on_chat_start
 async def factory():
-    cl.user_session.set(
-        "agent",
-        create_agent(should_use_chainlit=True),
-    )
+    cl.user_session.set("agent", create_agent(should_use_chainlit=True))
 
 
 @cl.on_message
 async def main(message: cl.Message):
     """
     ChainLit provides a web GUI for this application.
+
+    See https://docs.chainlit.io/integrations/llama-index.
+
+    Usage:
+
+    ```shell
+    chainlit run main.py -w
+    ```
     """
-    agent: ReActAgent = cl.user_session.get("agent")
-    response = agent.stream_chat(message.content)
+    agent: AgentRunner = cl.user_session.get("agent")
+    response = await cl.make_async(agent.chat)(message.content)
     response_message = cl.Message(content="")
-    for token in response.response_gen:
-        await response_message.stream_token(token=token)
-    if response.response:
-        response_message.content = response.response
+    response_message.content = response.response
     await response_message.send()
 
 
 if __name__ == "__main__":
-    # If Python’s builtin readline module is previously loaded, elaborate line editing and history features will be available.
+    from llama_index.core.storage.chat_store import SimpleChatStore
+    from llama_index.core.memory import ChatMemoryBuffer
 
-    # https://rich.readthedocs.io/en/stable/console.html#input
-    from rich.console import Console
-
-    console = Console()
+    # https://docs.llamaindex.ai/en/stable/module_guides/storing/chat_stores/#simplechatstore
+    try:
+        chat_store = SimpleChatStore.from_persist_path(persist_path="chat_store.json")
+    except Exception as e:
+        logger.warning(f"Failed to load chat store from file: {e}, using a new one.")
+        chat_store = SimpleChatStore()
+    chat_memory = ChatMemoryBuffer.from_defaults(
+        chat_store=chat_store,
+        chat_store_key="user1",
+    )
     agent = create_agent(should_use_chainlit=False)
-    agent.chat_repl()
+
+    try:
+        agent.chat_repl()
+    except KeyboardInterrupt:
+        logger.warning("Interrupted. Persisting chat storage.")
+        chat_store.persist(persist_path="chat_store.json")

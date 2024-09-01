@@ -1,29 +1,16 @@
-[tool.poetry]
-name = "agent"
+[project]
+name = "cocai"
 version = "0.1.0"
-description = "A LLM-powered agent."
-authors = ["Mingyang Li <github-agent@myli.page>"]
+description = "A chatbot that plays Call of Cthulhu (CoC) with you, powered by AI."
 readme = "README.md"
-
-[tool.poetry.dependencies]
-python = ">=3.10,<3.12"
-chainlit = "^1.0.200"
-rich = "^13.7.0"
-arize-phoenix = "^3.2.1"
-llama-hub = "^0.0.79"
-chromadb = "^0.4.22"
-wikipedia = "^1.4.0"
-transformers = "^4.37.2"
-torch = "^2.2.0"
-llama-index = "^0.10.7"
-llama-index-vector-stores-chroma = "^0.1.1"
-llama-index-llms-openai-like = "^0.1.1"
-llama-index-readers-wikipedia = "^0.1.2"
-llama-index-callbacks-arize-phoenix = "^0.1.2"
-llama-index-llms-ollama = "^0.1.1"
-llama-index-embeddings-huggingface = "^0.1.1"
-
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires-python = ">=3.10"
+dependencies = [
+    "arize-phoenix>=4.32.0",
+    "chainlit>=1.1.402",
+    "llama-index-embeddings-ollama>=0.3.0",
+    "llama-index-llms-ollama",
+    "llama-index>=0.11.3",
+    "rich>=13.8.0",
+    "ruff>=0.6.3",
+    "tomlkit>=0.13.2",
+]
