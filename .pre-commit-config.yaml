@@ -39,8 +39,11 @@ repos:
   # Ruff version.
   rev: v0.6.3
   hooks:
-    # Run the linter.
     - id: ruff
+      name: "Sort imports with Ruff"
+      args: [ --select, I, --fix ]
+    - id: ruff
+      name: "Lint code with Ruff"
       args: [ --fix ]
-    # Run the formatter.
     - id: ruff-format
+      name: "Format code with Ruff"

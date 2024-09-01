@@ -1,30 +1,27 @@
 #!/usr/bin/env python
 import logging
 import sys
+
+import chainlit as cl
 import phoenix as px
+from llama_index.core import Settings
+from llama_index.core.agent import AgentRunner, ReActAgent
+from llama_index.core.callbacks import CallbackManager, LlamaDebugHandler
+from llama_index.core.llms.utils import LLMType
 from llama_index.core.memory import ChatMemoryBuffer
 from llama_index.core.storage.chat_store import SimpleChatStore
-from rich.traceback import install
-from llama_index.core import Settings
-from llama_index.llms.ollama import Ollama
-import chainlit as cl
-from llama_index.embeddings.ollama import OllamaEmbedding
-from llama_index.core.callbacks import CallbackManager
-from llama_index.core.callbacks import LlamaDebugHandler
-from phoenix.trace.llama_index import OpenInferenceTraceCallbackHandler
-from llama_index.core.agent import AgentRunner
-from llama_index.core.llms.utils import LLMType
-
 from llama_index.core.tools import FunctionTool
-from llama_index.core.agent import ReActAgent
-
-from tools import ToolForSuggestingChoices
-
+from llama_index.embeddings.ollama import OllamaEmbedding
+from llama_index.llms.ollama import Ollama
+from phoenix.trace.llama_index import OpenInferenceTraceCallbackHandler
 
 # If Python’s builtin readline module is previously loaded, elaborate line editing and history features will be available.
 # https://rich.readthedocs.io/en/stable/console.html#input
 from rich.console import Console
 from rich.logging import RichHandler
+from rich.traceback import install
+
+from tools import ToolForSuggestingChoices
 
 console = Console()
 
