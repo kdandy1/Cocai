@@ -59,37 +59,6 @@ chat_memory = ChatMemoryBuffer.from_defaults(
     chat_store_key="user1",
 )
 
-# ============= Beginning of the code block for wiring on to models. =============
-
-
-# This LLM is used by the Agent itself.
-Settings.llm = Ollama(
-    # https://ollama.com/library/qwen2:7b-instruct
-    model="qwen2:7b",
-    request_timeout=60,  # secs
-    # Uncomment the following line to use the LLM server running on my gaming PC.
-    # base_url="http://10.147.20.237:11434",
-    streaming=True,
-    temperature=0.01,
-    additional_kwargs={
-        "stop": [
-            "<|im_start|>",
-            "<|im_end|>",
-            "Observation:",
-        ],
-        "seed": 42,
-    },
-)
-
-Settings.embed_model = OllamaEmbedding(
-    # https://ollama.com/library/nomic-embed-text
-    model_name="nomic-embed-text",
-    # Uncomment the following line to use the LLM server running on my gaming PC.
-    # base_url="http://10.147.20.237:11434",
-)
-
-# ============= End of the code block for wiring on to models. =============
-
 
 def create_callback_manager(should_use_chainlit: bool = True) -> CallbackManager:
     # Phoenix can display in real time the traces automatically collected from your LlamaIndex application.
@@ -118,6 +87,36 @@ def create_agent(
 ) -> AgentRunner:
     # Needed for "Retrieved the following sources" to show up on Chainlit.
     Settings.callback_manager = create_callback_manager(should_use_chainlit)
+    # ============= Beginning of the code block for wiring on to models. =============
+    # At least when Chainlit is involved, LLM initializations must happen upon the `@cl.on_chat_start` event,
+    # not in the global scope.
+    # Otherwise, it messes up with Arize Phoenix: LLM calls won't be captured as parts of an Agent Step.
+    Settings.llm = Ollama(
+        # https://ollama.com/library/qwen2:7b-instruct
+        model="qwen2:7b",
+        request_timeout=60,  # secs
+        # Uncomment the following line to use the LLM server running on my gaming PC.
+        # base_url="http://10.147.20.237:11434",
+        streaming=True,
+        temperature=0.01,
+        additional_kwargs={
+            "stop": [
+                "<|im_start|>",
+                "<|im_end|>",
+                "Observation:",
+            ],
+            "seed": 42,
+        },
+    )
+
+    Settings.embed_model = OllamaEmbedding(
+        # https://ollama.com/library/nomic-embed-text
+        model_name="nomic-embed-text",
+        # Uncomment the following line to use the LLM server running on my gaming PC.
+        # base_url="http://10.147.20.237:11434",
+    )
+    # ============= End of the code block for wiring on to models. =============
+
     all_tools = [
         FunctionTool.from_defaults(
             ToolForSuggestingChoices().suggest_choices,
