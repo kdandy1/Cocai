@@ -1,4 +1,6 @@
 serve:
-    @PYTHONPATH=. chainlit run main.py -w
+    @PYTHONPATH=. uv run chainlit run main.py -w
 run:
-    @PYTHONPATH=. python main.py
+    @PYTHONPATH=. uv run main.py
+format:
+    uv run ruff format
