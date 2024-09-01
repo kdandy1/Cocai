@@ -19,12 +19,13 @@ Inspired by the many impressive CoC replay videos on Bilibili, I'm programming t
 
 ## Usage
 
-First, ensure that your local Ollama server has already downloaded the `qwen2:7b` model. If you haven't (or aren't sure), run the following command:
+First, ensure that your local Ollama server has already downloaded the two `qwen2:7b` models. If you haven't (or aren't sure), run the following command:
 
-首先，确保你的本地 Ollama 服务器已经下载了 `qwen2:7b` 模型。如果你没有（或者不确定），运行以下命令：
+首先，确保你的本地 Ollama 服务器已经下载了两个 `qwen2:7b` 模型。如果你没有（或者不确定），运行以下命令：
 
 ```shell
-ollama pull qwen2:7b
+ollama pull qwen2:7b-instruct # used by the Agent itself
+ollama pull qwen2:7b-text # used by Agent's tools
 ```
 
 You only have to this once in a lifetime. After that, you can start the chatbot by running:
