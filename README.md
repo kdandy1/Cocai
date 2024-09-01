@@ -7,6 +7,8 @@ A chatbot that plays Call of Cthulhu (CoC) with you, powered by AI.
 
 一个陪你玩《克苏鲁的呼唤》（CoC）的聊天机器人，由AI驱动。
 
+<img width="973" alt="image" src="https://github.com/user-attachments/assets/a8d2df9a-84b3-4c86-85ce-ade6469b213b">
+
 Written in Python, this project uses the Rust-based package manager [`uv`](https://docs.astral.sh/uv/).
 
 这个项目使用Python编写，使用基于Rust的包管理器[`uv`](https://docs.astral.sh/uv/)。
