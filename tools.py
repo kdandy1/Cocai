@@ -33,7 +33,7 @@ def roll_a_dice(
     n: int = Field(description="number of faces of the dice to roll", gt=0, le=100),
 ) -> int:
     """
-    Roll a n-faced dice and return the result.
+    Roll an n-faced dice and return the result.
     """
     return random.randint(1, n)
 
