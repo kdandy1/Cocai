@@ -1,4 +1,4 @@
-delete chat_store.json
+chat_store.json
 
 chroma_db/
 llamaIndex_storage/
