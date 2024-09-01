@@ -83,6 +83,13 @@ def __roll_a_skill(
     result = roll_a_dice(n=100)
     logger = logging.getLogger("__roll_a_skill")
     logger.info(f"result: {result}")
+    degree_of_success = __map_dice_outcome_to_degree_of_success(
+        difficulty, result, skill_value
+    )
+    return degree_of_success
+
+
+def __map_dice_outcome_to_degree_of_success(difficulty, result, skill_value):
     if result == 100:
         return DegreesOfSuccess.FUMBLE
     if result == 1:
