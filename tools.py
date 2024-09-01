@@ -19,29 +19,31 @@ class ToolForSuggestingChoices:
         self.llm = llm
 
     def suggest_choices(
-        self, situation: str = Field(description="当前场景的描述")
+        self, situation: str = Field(description="a brief description of the situation")
     ) -> str:
         """
-        如果用户想知道在这个情景下可以做些什么（以及可能会有怎样的后果），可以用这个工具查询。
+        If the user wants to know what they can do in a particular situation (and what the possible consequences might be), you can use this tool.
         """
         prompt = self.__prompt.format(situation=situation)
         return Settings.llm.complete(prompt)
 
 
-def roll_a_dice(n: int = Field(description="骰子的面数", gt=0, le=100)) -> int:
+def roll_a_dice(
+    n: int = Field(description="number of faces of the dice to roll", gt=0, le=100),
+) -> int:
     """
-    掷一个骰子，返回 1 到 n 之间的一个整数。
+    Roll a n-faced dice and return the result.
     """
     return random.randint(1, n)
 
 
-class RollResult(IntEnum):
-    FUMBLE = 0  # 大失败
-    FAIL = 1  # 失败
-    SUCCESS = 2  # 成功
-    HARD_SUCCESS = 3  # 困难成功
-    EXTREME_SUCCESS = 4  # 极难成功
-    CRITICAL_SUCCESS = 5  # 大成功
+class DegreesOfSuccess(IntEnum):
+    FUMBLE = 0
+    FAIL = 1
+    SUCCESS = 2
+    HARD_SUCCESS = 3
+    EXTREME_SUCCESS = 4
+    CRITICAL_SUCCESS = 5
 
 
 class Difficulty(IntEnum):
@@ -69,51 +71,55 @@ class Difficulty(IntEnum):
 
 
 def __roll_a_skill(
-    skill_value: int = Field(description="技能值", ge=0, le=100),
-    difficulty: Difficulty = Field(description="难度等级", default=Difficulty.REGULAR),
-) -> RollResult:
+    skill_value: int = Field(description="skill value", ge=0, le=100),
+    difficulty: Difficulty = Field(
+        description="difficulty level", default=Difficulty.REGULAR
+    ),
+) -> DegreesOfSuccess:
     """
     Roll a skill check and return the result.
     """
     result = roll_a_dice(n=100)
     if result == 100:
-        return RollResult.FUMBLE
+        return DegreesOfSuccess.FUMBLE
     if result == 1:
-        return RollResult.CRITICAL_SUCCESS
-    result_ignoring_difficulty = RollResult.FAIL
+        return DegreesOfSuccess.CRITICAL_SUCCESS
+    result_ignoring_difficulty = DegreesOfSuccess.FAIL
     if result <= skill_value // 5:
-        result_ignoring_difficulty = RollResult.EXTREME_SUCCESS
+        result_ignoring_difficulty = DegreesOfSuccess.EXTREME_SUCCESS
     elif result <= skill_value // 2:
-        result_ignoring_difficulty = RollResult.HARD_SUCCESS
+        result_ignoring_difficulty = DegreesOfSuccess.HARD_SUCCESS
     elif result <= skill_value:
-        result_ignoring_difficulty = RollResult.SUCCESS
+        result_ignoring_difficulty = DegreesOfSuccess.SUCCESS
     # Now, we consider the difficulty.
     if difficulty == Difficulty.REGULAR:
         return result_ignoring_difficulty
     elif difficulty == Difficulty.DIFFICULT:
-        if result_ignoring_difficulty >= RollResult.HARD_SUCCESS:
+        if result_ignoring_difficulty >= DegreesOfSuccess.HARD_SUCCESS:
             return result_ignoring_difficulty
         # else, fall through to return a FAIL.
     elif difficulty == Difficulty.EXTREME:
-        if result_ignoring_difficulty == RollResult.EXTREME_SUCCESS:
+        if result_ignoring_difficulty == DegreesOfSuccess.EXTREME_SUCCESS:
             return result_ignoring_difficulty
         # else, fall through to return a FAIL.
-    return RollResult.FAIL
+    return DegreesOfSuccess.FAIL
 
 
 def roll_a_skill(
-    skill_value: int = Field(description="技能值", ge=0, le=100),
-    difficulty: Difficulty = Field(description="难度等级", default=Difficulty.REGULAR),
+    skill_value: int = Field(description="skill value", ge=0, le=100),
+    difficulty: Difficulty = Field(
+        description="difficulty level", default=Difficulty.REGULAR
+    ),
 ) -> str:
     """
-    掷一个技能骰，返回结果。
+    Roll a skill check and check the result.
     """
     roll_result = __roll_a_skill(skill_value, difficulty)
     return {
-        RollResult.FUMBLE: "大失败",
-        RollResult.FAIL: "失败",
-        RollResult.SUCCESS: "成功",
-        RollResult.HARD_SUCCESS: "困难成功",
-        RollResult.EXTREME_SUCCESS: "极难成功",
-        RollResult.CRITICAL_SUCCESS: "大成功",
+        DegreesOfSuccess.FUMBLE: "fumble",
+        DegreesOfSuccess.FAIL: "fail",
+        DegreesOfSuccess.SUCCESS: "success",
+        DegreesOfSuccess.HARD_SUCCESS: "hard success",
+        DegreesOfSuccess.EXTREME_SUCCESS: "extreme success",
+        DegreesOfSuccess.CRITICAL_SUCCESS: "critical success",
     }[roll_result]

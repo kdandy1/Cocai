@@ -1,141 +1,135 @@
+In *Call of Cthulhu* (CoC), the game uses a wide variety of skills to handle different situations the investigators might face. Here is a list of the most common skills, grouped into categories for convenience:
 
-在《克苏鲁的召唤》（Call of Cthulhu）中，角色可以选择和提升多种技能，这些技能涵盖了调查、战斗、社交、知识等方面。以下是典型的技能列表，虽然具体的技能可能会根据版本或规则的不同有所变化：
+### **Investigation and Knowledge Skills**
+1. **Accounting** – Understanding financial records.
+2. **Anthropology** – Study of human cultures.
+3. **Archaeology** – Knowledge of ancient cultures and artifacts.
+4. **Library Use** – Researching through books, journals, and records.
+5. **Occult** – Knowledge of mysticism, folklore, and supernatural lore.
+6. **Cthulhu Mythos** – Understanding of the cosmic horrors and forbidden knowledge.
+7. **History** – Knowledge of historical events and eras.
+8. **Law** – Familiarity with legal systems and precedents.
+9. **Natural World** – Knowledge of plants, animals, and natural phenomena.
+10. **Navigate** – Finding your way through unfamiliar terrain.
+11. **Science (various fields)** – Knowledge in specialized scientific areas (e.g., Biology, Chemistry, Physics).
+12. **Spot Hidden** – Perception of hidden or out-of-place objects.
+13. **Track** – Following a trail left by someone or something.
+14. **Art/Craft (various)** – Skills in artistic or crafting fields like painting, sculpture, or carpentry.
 
-### 1. **调查类技能**
-- **侦查（Spot Hidden）**: 发现隐藏的物体或线索。
-- **聆听（Listen）**: 通过听力捕捉声音或对话。
-- **追踪（Track）**: 追踪生物或人的踪迹。
-- **图书馆使用（Library Use）**: 搜索和解读书籍和档案中的信息。
-- **考古学（Archaeology）**: 鉴别和分析古代遗物和遗址。
-- **历史（History）**: 了解历史事件和文化。
-- **神秘学（Occult）**: 识别和理解神秘或超自然的事物。
+### **Social and Communication Skills**
+1. **Charm** – Using personality or attractiveness to influence people.
+2. **Fast Talk** – Persuading others quickly or on the spot, often through deception.
+3. **Intimidate** – Coercing someone into compliance through threats or fear.
+4. **Persuade** – Convincing others through logical argument or appeal.
+5. **Psychology** – Understanding the motives and feelings of others.
 
-### 2. **社交类技能**
-- **说服（Persuade）**: 说服他人接受自己的观点或要求。
-- **魅惑（Charm）**: 通过魅力打动他人，获取好感。
-- **威吓（Intimidate）**: 通过恐吓让他人屈服。
-- **话术（Fast Talk）**: 通过快速说话使他人相信虚假的信息。
-- **心理学（Psychology）**: 理解他人的心理状态或动机。
+### **Physical Skills**
+1. **Climb** – Scaling walls, cliffs, or other vertical surfaces.
+2. **Dodge** – Avoiding physical attacks or hazards.
+3. **Drive Auto** – Operating cars and other land vehicles.
+4. **Jump** – Leaping across gaps or overcoming physical obstacles.
+5. **Ride** – Riding animals such as horses.
+6. **Swim** – Ability to swim in water, often for survival.
+7. **Throw** – Accurately throwing objects like grenades or rocks.
 
-### 3. **知识类技能**
-- **科学（Science）**: 包括生物学、化学、物理学等各种科学知识。
-- **医学（Medicine）**: 诊断和治疗疾病或伤口。
-- **法律（Law）**: 知晓法律条文和运用法律的能力。
-- **药学（Pharmacy）**: 制作和使用药物。
-- **自然学（Natural World）**: 了解自然界的动植物和现象。
-- **外语（Other Language）**: 精通一种非母语的语言。
-- **母语（Own Language）**: 对母语的掌握程度，通常为高分。
+### **Combat and Weapon Skills**
+1. **Fighting (Brawl)** – Hand-to-hand combat, including punching, kicking, or grappling.
+2. **Fighting (various weapons)** – Skills with specific weapons (e.g., Knife, Sword, Whip).
+3. **Firearms (various)** – Using ranged weapons such as Handgun, Rifle, or Shotgun.
+4. **Melee Weapons** – Proficiency in non-firearm weapons (clubs, swords, etc.).
 
-### 4. **战斗类技能**
-- **拳击（Boxing）**: 使用拳头进行战斗。
-- **闪避（Dodge）**: 闪避攻击的能力。
-- **射击（Firearms）**: 使用枪械进行射击的技能。
-- **斗殴（Brawl）**: 在近身战斗中使用徒手或即兴武器的技能。
-- **长武器（Rifle/Shotgun）**: 使用步枪或霰弹枪的技能。
-- **近战武器（Melee Weapon）**: 使用各种近战武器的技能，如刀剑、棍棒等。
+### **Stealth and Subterfuge Skills**
+1. **Disguise** – Altering your appearance to look like someone else.
+2. **Stealth** – Moving quietly or unseen.
+3. **Sleight of Hand** – Picking pockets or performing manual dexterity tricks.
+4. **Locksmith** – Picking locks and bypassing mechanical security.
 
-### 5. **职业与专长类技能**
-- **会计（Accounting）**: 处理财务和账目的技能。
-- **法律（Law）**: 处理法律事务的知识。
-- **驾驶（Drive Auto）**: 驾驶汽车的技能。
-- **航海（Pilot）**: 操控船只或飞行器的技能。
-- **骑术（Ride）**: 骑马或其他动物的技能。
-- **电子学（Electronics）**: 处理电子设备的技能。
-- **计算机使用（Computer Use）**: 操作和编程计算机的技能。
+### **Mental and Survival Skills**
+1. **First Aid** – Providing immediate medical care in emergencies.
+2. **Medicine** – Treating injuries, diseases, or illnesses more thoroughly.
+3. **Listen** – Hearing faint or distant sounds.
+4. **Survival (various)** – Surviving in harsh environments (e.g., wilderness survival).
 
-### 6. **手艺与杂项技能**
-- **锁匠（Locksmith）**: 解锁和锁定机制的技能。
-- **机械维修（Mechanical Repair）**: 修理机械装置的技能。
-- **电气维修（Electrical Repair）**: 修理电气设备的技能。
-- **艺术/工艺（Art/Craft）**: 如绘画、雕刻、写作等特定艺术或工艺技能。
-- **伪造（Forgery）**: 伪造文件或物品的技能。
-- **潜行（Stealth）**: 秘密行动或隐藏自己的能力。
+### **Languages**
+1. **Other Language (various)** – Ability to speak and understand foreign or ancient languages (e.g., Latin, French).
+2. **Own Language** – Proficiency in the investigator’s native language (usually English).
 
-### 7. **意志与身体技能**
-- **意志（Willpower）**: 保持精神稳定和抵抗精神攻击的能力。
-- **力量（Strength）**: 测试角色的体力和力量。
-- **攀爬（Climb）**: 攀爬墙壁、树木或其他物体的技能。
-- **跳跃（Jump）**: 跳跃障碍物或沟壑的能力。
-- **游泳（Swim）**: 在水中行动和生存的能力。
+### **Technical and Engineering Skills**
+1. **Computer Use** – Operating and hacking computers (more relevant in modern settings).
+2. **Electrical Repair** – Fixing or understanding electrical systems.
+3. **Mechanical Repair** – Repairing machines, engines, or mechanical systems.
+4. **Operate Heavy Machinery** – Using large equipment such as cranes, bulldozers, or industrial tools.
 
-### 8. **神秘与特殊技能**
-- **克苏鲁神话（Cthulhu Mythos）**: 对克苏鲁神话知识的理解，这通常会降低理智值（SAN）。
-- **超自然学（Occult）**: 理解和操控超自然现象的技能。
-- **神秘学（Mythos Knowledge）**: 专门与神秘知识相关的技能。
+### **Other Skills**
+1. **Appraise** – Estimating the value of an object.
+2. **Art/Craft (specific)** – Skilled in creating or crafting specific artistic items.
+3. **Pilot (various)** – Operating planes, boats, or other vehicles.
 
-在《克苏鲁的召唤》游戏中，不同的技能检定会对故事产生重大影响。以下是几个场景的例子，展示了技能检定如何影响故事的走向。
+# Recommended Skills for Common Situations
 
-### 场景一：
+Situation: The players discover a mysterious, ancient artifact in a hidden chamber. It is covered in strange symbols and emits a faint, otherworldly glow.
 
-**背景**：玩家在一个古老的图书馆中寻找关于一个神秘教派的资料，这些资料可能揭示隐藏的真相。
+**Suggested Skills:**
+1. **Archaeology**
+   - **Critical Success:** The player identifies the artifact as a powerful relic from a lost civilization and uncovers its true purpose. This knowledge provides a significant advantage in future encounters, as the artifact can be used to counter certain supernatural threats.
+   - **Ordinary Success:** The player recognizes the artifact as something ancient and possibly valuable, though its exact origin remains unknown. The group is cautious but unsure of its full potential.
+   - **Failure:** The player misinterprets the symbols, believing the artifact to be a harmless trinket. This leads to a false sense of security, potentially causing problems when the artifact's true nature is revealed.
+   - **Fumble:** The player’s examination triggers a hidden mechanism in the artifact, unleashing a dangerous curse or summoning a malevolent entity.
 
-**技能选择**：
+2. **Occult**
+   - **Extreme Success:** The player deciphers the symbols and realizes they are part of a ritual. They also understand how to safely control or use the artifact to protect the group from supernatural forces.
+   - **Hard Success:** The player recognizes the artifact as tied to dark rituals and understands the risks involved. The group decides to handle it with extreme caution.
+   - **Failure:** The player senses something strange about the artifact but cannot determine its purpose. This uncertainty causes unease among the group.
+   - **Fumble:** The player mistakes the artifact for a harmless relic, and attempting to use it inadvertently invites dark forces or causes psychological harm.
 
-1.  **图书馆使用（Library Use）**：
+3. **Library Use**
+   - **Hard Success:** The player recalls reading about similar artifacts in an obscure text and quickly identifies it as something dangerous. They also remember a way to neutralize its effects.
+   - **Ordinary Success:** The player remembers some vague details about the artifact’s origin but needs more research to fully understand it. The group decides to take the artifact to a safer location for further study.
+   - **Failure:** The player cannot recall any useful information about the artifact, leaving the group in the dark about its significance.
+   - **Fumble:** The player misremembers critical details, leading the group to believe the artifact is something it’s not, potentially causing them to mishandle it.
 
-    -   **失败**：玩家无法找到任何有用的资料，可能在图书馆中浪费了大量时间，导致错过重要的线索或时间紧迫的事件。
-    -   **成功**：玩家找到了一本描述该教派历史的古籍，提供了下一步探索的线索。
-2.  **历史（History）**：
+Situation: The players are trapped inside a crumbling, abandoned mansion that’s beginning to collapse around them. They need to find a way out before it’s too late.
 
-    -   **失败**：玩家对书中的信息感到困惑，误解了教派的起源，可能导致对敌人实力的低估或采取错误的行动。
-    -   **成功**：玩家能够正确解读书中的历史信息，发现了教派与当地某个地点的联系，为后续调查指明了方向。
-3.  **拉丁语（Latin）**：
+**Suggested Skills:**
+1. **Spot Hidden**
+   - **Critical Success:** The player spots a hidden passage that leads directly to an exit, allowing the group to escape quickly and safely.
+   - **Hard Success:** The player notices a weak spot in the wall that can be broken through, creating an improvised escape route.
+   - **Failure:** The player overlooks potential exits, leading the group into more dangerous areas as they continue searching for a way out.
+   - **Fumble:** The player mistakes a dangerous area, like a structurally unsound staircase, for a safe path, causing further damage or injury.
 
-    -   **失败**：玩家无法阅读古籍中的拉丁文，无法理解书中的关键内容，可能导致忽视了潜在的危险或未能找到有用的咒语。
-    -   **成功**：玩家成功翻译了古籍，解锁了隐藏的咒语或仪式，可以在后续情节中使用。
-4.  **侦查（Spot Hidden）**：
+2. **Climb**
+   - **Extreme Success:** The player finds a sturdy beam or rope and climbs to a high window, creating a safe escape route for the group. Everyone escapes without injury.
+   - **Ordinary Success:** The player manages to climb up to a ledge and helps the others follow, though it takes longer and they barely escape as the building collapses behind them.
+   - **Failure:** The player struggles to climb and fails to find a safe route, forcing the group to look for another way out while the building continues to crumble.
+   - **Fumble:** The player slips and falls, causing significant injury or dropping something important. The delay could prove fatal as the building collapses around them.
 
-    -   **失败**：玩家忽略了一本隐藏在书架后的书，可能错过了最关键的线索，导致调查方向偏离。
-    -   **成功**：玩家发现了一本被故意隐藏起来的书，书中包含了教派的秘密仪式，这将对玩家后续行动产生深远影响。
+3. **Strength**
+   - **Hard Success:** The player uses brute force to break down a blocked door or clear debris, allowing the group to escape just in time.
+   - **Ordinary Success:** The player manages to push through obstacles but exhausts themselves in the process, slowing the group down but still getting them out safely.
+   - **Failure:** The player cannot move the debris blocking the exit, leaving the group trapped and forcing them to find another way out.
+   - **Fumble:** The player’s attempt to force their way through causes a part of the building to collapse further, injuring themselves or others and complicating the escape.
 
-### 场景二：
+Situation: The players find themselves face-to-face with the leader of a dangerous cult who holds valuable information. They must negotiate to gain his trust or extract the information they need.
 
-**背景**：玩家在一个阴森的树林中追踪一个疑似参与邪教的可疑人物。
+**Suggested Skills:**
+1. **Persuade**
+   - **Critical Success:** The player convinces the cult leader that they share the same goals, gaining access to crucial information and possibly even temporary assistance from the cult.
+   - **Hard Success:** The player persuades the cult leader to share some information, though it may be partial or come with strings attached. The group gets what they need but must be wary of future dealings.
+   - **Failure:** The player’s attempts to persuade the cult leader are met with suspicion, and they get little to no useful information. The leader becomes more guarded and hostile.
+   - **Fumble:** The player says something that offends or angers the cult leader, escalating the situation into a potentially violent confrontation.
 
-**技能选择**：
+2. **Intimidate**
+   - **Extreme Success:** The player intimidates the cult leader into revealing all they know, causing fear and doubt within the cult. The group gains the upper hand in their dealings.
+   - **Hard Success:** The cult leader is visibly shaken and reluctantly provides some information, but they may retaliate later or set a trap for the group.
+   - **Failure:** The cult leader is unfazed by the intimidation and refuses to cooperate. The group may need to find another approach or risk angering the cult.
+   - **Fumble:** The intimidation backfires, enraging the cult leader and leading to immediate hostility or an ambush.
 
-1.  **追踪（Track）**：
+3. **Psychology**
+   - **Hard Success:** The player reads the cult leader’s intentions and uses this knowledge to manipulate the conversation, gaining useful information while avoiding danger.
+   - **Ordinary Success:** The player picks up on the cult leader’s nervousness or desires and tailors their approach accordingly, getting some information without raising too many suspicions.
+   - **Failure:** The player cannot get a clear read on the cult leader, making the negotiation more difficult and tense, with minimal information gained.
+   - **Fumble:** The player misinterprets the cult leader’s motives, leading to a major blunder in the conversation that could jeopardize the entire negotiation or even trigger a violent response.
 
-    -   **失败**：玩家失去了目标的踪迹，可能会在树林中迷路，导致时间浪费或陷入危险境地。
-    -   **成功**：玩家成功追踪到目标的位置，发现了他正在进行的邪恶仪式，为阻止阴谋提供了机会。
-2.  **聆听（Listen）**：
+Situation: {situation}
 
-    -   **失败**：玩家没有听到前方的动静，可能在不知不觉中接近了敌人，导致被伏击或遭遇突发危险。
-    -   **成功**：玩家听到了远处传来的低语声，确认了目标的位置，能够提前做好准备或规避危险。
-3.  **隐匿（Stealth）**：
-
-    -   **失败**：玩家在追踪时发出了声音，惊动了目标，目标逃跑或反击，可能导致战斗或丢失线索。
-    -   **成功**：玩家成功躲避了目标的视线，悄无声息地靠近，获得了关键情报或有机会进行突然袭击。
-4.  **自然学（Natural World）**：
-
-    -   **失败**：玩家误判了树林中的植物或地形，可能误入陷阱或受伤，削弱了后续行动的能力。
-    -   **成功**：玩家辨认出了树林中的危险区域，能够安全地绕开障碍，并发现了目标的行踪。
-
-### 场景三：
-
-**背景**：玩家正在尝试与一位神秘而古老的生物交流，希望获得它的帮助或情报。
-
-**技能选择**：
-
-1.  **说服（Persuade）**：
-
-    -   **失败**：玩家未能打动生物，可能激怒它，导致玩家面临直接的威胁或失去宝贵的情报。
-    -   **成功**：玩家成功说服了生物，它愿意提供帮助或透露关键情报，推动故事向前发展。
-2.  **心理学（Psychology）**：
-
-    -   **失败**：玩家误判了生物的意图，可能做出了错误的回应，导致谈判破裂或触发敌对行为。
-    -   **成功**：玩家成功洞察了生物的动机，采用了正确的策略，使得交流顺利进行，并获得了有价值的信息。
-3.  **神秘学（Occult）**：
-
-    -   **失败**：玩家对生物的本质理解不足，可能使用了错误的仪式或语言，导致生物对玩家产生敌意。
-    -   **成功**：玩家运用了正确的神秘知识，能够与生物建立联系，并获得了它的尊重或合作。
-4.  **信用评级（Credit Rating）**：
-
-    -   **失败**：玩家无法展示自己的地位或权威，生物可能认为玩家不值得帮助或合作。
-    -   **成功**：玩家成功展现了自己的影响力或资源，生物决定与玩家合作，共同对抗更大的威胁。
-
-### 场景四：
-
-**背景**：{situation}
-
-**技能选择**：
+**Suggested Skills:**
