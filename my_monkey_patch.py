@@ -59,9 +59,10 @@ class ChainlitCallbackHandler(TokenCountingHandler):
         step_input: Optional[Dict[str, Any]] = payload
         if event_type == CBEventType.FUNCTION_CALL:
             step_type = "tool"
-            metadata: ToolMetadata = payload.get(EventPayload.TOOL) if payload else None
-            step_name = metadata.name
-            step_input = payload.get(EventPayload.FUNCTION_CALL) if payload else None
+            if payload:
+                metadata: ToolMetadata = payload.get(EventPayload.TOOL)
+                step_name = metadata.name
+                step_input = payload.get(EventPayload.FUNCTION_CALL)
         elif event_type == CBEventType.RETRIEVE:
             step_type = "tool"
         elif event_type == CBEventType.QUERY:
