@@ -177,7 +177,13 @@ async def main(message: cl.Message):
     ```
     """
     agent: AgentRunner = cl.user_session.get("agent")
-    response = await cl.make_async(agent.chat)(message.content)
+    # The Chainlit doc recommends using `await cl.make_async(agent.chat)(message.content)` instead:
+    # > The make_async function takes a synchronous function (for instance a LangChain agent) and returns an
+    # > asynchronous function that will run the original function in a separate thread. This is useful to run
+    # > long running synchronous tasks without blocking the event loop.
+    # (https://docs.chainlit.io/api-reference/make-async#make-async)
+    # But I think we can just use the async function directly.
+    response = await agent.achat(message.content)
     response_message = cl.Message(content="")
     response_message.content = response.response
     await response_message.send()
