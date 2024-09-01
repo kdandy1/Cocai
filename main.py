@@ -183,6 +183,7 @@ async def main(message: cl.Message):
     # > long running synchronous tasks without blocking the event loop.
     # (https://docs.chainlit.io/api-reference/make-async#make-async)
     # But I think we can just use the async function directly.
+    # TODO: streaming seems broken. Why?
     response = await agent.achat(message.content)
     response_message = cl.Message(content="")
     response_message.content = response.response
