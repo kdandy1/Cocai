@@ -21,7 +21,7 @@ from rich.console import Console
 from rich.logging import RichHandler
 from rich.traceback import install
 
-from tools import ToolForSuggestingChoices
+from tools import ToolForSuggestingChoices, roll_a_dice, roll_a_skill
 
 console = Console()
 
@@ -139,7 +139,14 @@ def create_agent(
     all_tools = [
         FunctionTool.from_defaults(
             ToolForSuggestingChoices(llm=llm_for_text_completion).suggest_choices,
-        )
+            return_direct=True,
+        ),
+        FunctionTool.from_defaults(
+            roll_a_dice,
+        ),
+        FunctionTool.from_defaults(
+            roll_a_skill,
+        ),
     ]
     agent = ReActAgent.from_tools(
         tools=all_tools,
