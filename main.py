@@ -7,7 +7,6 @@ import phoenix as px
 from llama_index.core import Settings
 from llama_index.core.agent import AgentRunner, ReActAgent
 from llama_index.core.callbacks import CallbackManager, LlamaDebugHandler
-from llama_index.core.llms.utils import LLMType
 from llama_index.core.memory import ChatMemoryBuffer
 from llama_index.core.storage.chat_store import SimpleChatStore
 from llama_index.core.tools import FunctionTool
@@ -66,7 +65,7 @@ chat_memory = ChatMemoryBuffer.from_defaults(
 # This LLM is used by the Agent itself.
 Settings.llm = Ollama(
     # https://ollama.com/library/qwen2:7b-instruct
-    model="qwen2:7b-instruct",
+    model="qwen2:7b",
     request_timeout=60,  # secs
     # Uncomment the following line to use the LLM server running on my gaming PC.
     # base_url="http://10.147.20.237:11434",
@@ -81,21 +80,6 @@ Settings.llm = Ollama(
         "seed": 42,
     },
 )
-
-# This LLM is used by tools for its latent knowledge.
-llm_for_text_completion = Ollama(
-    # https://ollama.com/library/qwen2:7b-text
-    model="qwen2:7b-text",
-    request_timeout=60,  # secs
-    # Uncomment the following line to use the LLM server running on my gaming PC.
-    # base_url="http://10.147.20.237:11434",
-    streaming=True,
-    temperature=0.01,
-    additional_kwargs={
-        "seed": 42,
-    },
-)
-
 
 Settings.embed_model = OllamaEmbedding(
     # https://ollama.com/library/nomic-embed-text
@@ -131,13 +115,12 @@ def create_callback_manager(should_use_chainlit: bool = True) -> CallbackManager
 def create_agent(
     should_use_chainlit: bool,
     max_action_steps: int = 5,
-    llm_for_text_completion: LLMType = llm_for_text_completion,
 ) -> AgentRunner:
     # Needed for "Retrieved the following sources" to show up on Chainlit.
     Settings.callback_manager = create_callback_manager(should_use_chainlit)
     all_tools = [
         FunctionTool.from_defaults(
-            ToolForSuggestingChoices(llm=llm_for_text_completion).suggest_choices,
+            ToolForSuggestingChoices().suggest_choices,
             return_direct=True,
         ),
         FunctionTool.from_defaults(

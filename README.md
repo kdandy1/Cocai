@@ -13,11 +13,10 @@ A chatbot that plays Call of Cthulhu (CoC) with you, powered by AI.
 
 Install [Ollama](https://ollama.com/download), a local server that runs large language models (LLMs). This chatbot uses Ollama to generate text. If you prefer to use more powerful LLMs, you can edit the code.
 
-Ensure that your local Ollama server has already downloaded the two `qwen2:7b` models. If you haven't (or aren't sure), run the following command:
+Ensure that your local Ollama server has already downloaded the `qwen2:7b` model. If you haven't (or aren't sure), run the following command:
 
 ```shell
-ollama pull qwen2:7b-instruct # used by the Agent itself
-ollama pull qwen2:7b-text # used by Agent's tools
+ollama pull qwen2:7b
 ```
 
 Install [`just`](https://github.com/casey/just), a command runner. I use this because I always tend to forget the exact command to run.
