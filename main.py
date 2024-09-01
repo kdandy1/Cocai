@@ -130,7 +130,6 @@ def create_callback_manager(should_use_chainlit: bool = True) -> CallbackManager
 
 def create_agent(
     should_use_chainlit: bool,
-    should_override_system_prompt: bool = True,
     max_action_steps: int = 5,
     llm_for_text_completion: LLMType = llm_for_text_completion,
 ) -> AgentRunner:
@@ -155,19 +154,18 @@ def create_agent(
         # +1: The final output reasoning step needs to take a spot.
         memory=chat_memory,
     )
-    if should_override_system_prompt:
-        # Override the default system prompt for ReAct chats.
-        with open("prompts/system_prompt.md") as f:
-            MY_SYSTEM_PROMPT = f.read()
-        my_system_prompt = MY_SYSTEM_PROMPT.replace(
-            # TODO: Use `PromptTemplate.partial_format`. Today, it's not working.
-            "{allowance}",
-            str(max_action_steps),
-        )
-        from llama_index.core import PromptTemplate
+    # Override the default system prompt for ReAct chats.
+    with open("prompts/system_prompt.md") as f:
+        MY_SYSTEM_PROMPT = f.read()
+    my_system_prompt = MY_SYSTEM_PROMPT.replace(
+        # TODO: Use `PromptTemplate.partial_format`. Today, it's not working.
+        "{allowance}",
+        str(max_action_steps),
+    )
+    from llama_index.core import PromptTemplate
 
-        system_prompt = PromptTemplate(my_system_prompt)
-        agent.update_prompts({"agent_worker:system_prompt": system_prompt})
+    system_prompt = PromptTemplate(my_system_prompt)
+    agent.update_prompts({"agent_worker:system_prompt": system_prompt})
     return agent
 
 
