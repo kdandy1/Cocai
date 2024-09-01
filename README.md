@@ -1,5 +1,8 @@
 # CoCai: 抠菜
 
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+
 A chatbot that plays Call of Cthulhu (CoC) with you, powered by AI.
 
 一个陪你玩《克苏鲁的呼唤》（CoC）的聊天机器人，由AI驱动。
