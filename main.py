@@ -24,6 +24,10 @@ from tools import ToolForSuggestingChoices, roll_a_dice, roll_a_skill
 
 console = Console()
 
+# "Phoenix can display in real time the traces automatically collected from your LlamaIndex application."
+# https://docs.llamaindex.ai/en/stable/module_guides/observability/observability.html
+px.launch_app()
+
 # https://rich.readthedocs.io/en/latest/logging.html#handle-exceptions
 logging.basicConfig(
     level=logging.INFO,
@@ -43,10 +47,6 @@ old_traceback_handler = install(show_locals=True, console=console)
 logger.debug(
     f"The global traceback handler has been swapped from {old_traceback_handler} to {sys.excepthook}."
 )
-
-# "Phoenix can display in real time the traces automatically collected from your LlamaIndex application."
-# https://docs.llamaindex.ai/en/stable/module_guides/observability/observability.html
-px.launch_app()
 
 # https://docs.llamaindex.ai/en/stable/module_guides/storing/chat_stores/#simplechatstore
 try:
