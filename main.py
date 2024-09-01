@@ -1,8 +1,25 @@
 #!/usr/bin/env python
 import logging
 import sys
-
+import phoenix as px
+from llama_index.core.memory import ChatMemoryBuffer
+from llama_index.core.storage.chat_store import SimpleChatStore
+from rich.traceback import install
+from llama_index.core import Settings
+from llama_index.llms.ollama import Ollama
 import chainlit as cl
+from llama_index.embeddings.ollama import OllamaEmbedding
+from llama_index.core.callbacks import CallbackManager
+from llama_index.core.callbacks import LlamaDebugHandler
+from phoenix.trace.llama_index import OpenInferenceTraceCallbackHandler
+from llama_index.core.agent import AgentRunner
+from llama_index.core.llms.utils import LLMType
+
+from llama_index.core.tools import FunctionTool
+from llama_index.core.agent import ReActAgent
+
+from tools import ToolForSuggestingChoices
+
 
 # If Python’s builtin readline module is previously loaded, elaborate line editing and history features will be available.
 # https://rich.readthedocs.io/en/stable/console.html#input
@@ -25,8 +42,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # https://rich.readthedocs.io/en/stable/traceback.html#traceback-handler
-from rich.traceback import install
-
 logger.debug("Installing rich traceback handler.")
 old_traceback_handler = install(show_locals=True, console=console)
 logger.debug(
@@ -35,12 +50,7 @@ logger.debug(
 
 # "Phoenix can display in real time the traces automatically collected from your LlamaIndex application."
 # https://docs.llamaindex.ai/en/stable/module_guides/observability/observability.html
-import phoenix as px
-
 px.launch_app()
-
-from llama_index.core.memory import ChatMemoryBuffer
-from llama_index.core.storage.chat_store import SimpleChatStore
 
 # https://docs.llamaindex.ai/en/stable/module_guides/storing/chat_stores/#simplechatstore
 try:
@@ -55,9 +65,6 @@ chat_memory = ChatMemoryBuffer.from_defaults(
 
 # ============= Beginning of the code block for wiring on to models. =============
 
-
-from llama_index.core import Settings
-from llama_index.llms.ollama import Ollama
 
 # This LLM is used by the Agent itself.
 Settings.llm = Ollama(
@@ -92,7 +99,6 @@ llm_for_text_completion = Ollama(
     },
 )
 
-from llama_index.embeddings.ollama import OllamaEmbedding
 
 Settings.embed_model = OllamaEmbedding(
     # https://ollama.com/library/nomic-embed-text
@@ -104,12 +110,7 @@ Settings.embed_model = OllamaEmbedding(
 # ============= End of the code block for wiring on to models. =============
 
 
-from llama_index.core.callbacks import CallbackManager
-
-
 def create_callback_manager(should_use_chainlit: bool = True) -> CallbackManager:
-    from llama_index.core.callbacks import LlamaDebugHandler
-
     # Phoenix can display in real time the traces automatically collected from your LlamaIndex application.
     # The one-click way is as follows:
     # ```
@@ -119,8 +120,6 @@ def create_callback_manager(should_use_chainlit: bool = True) -> CallbackManager
     # )
     # ```
     # But I prefer to do it manually, so that I can put all callback handlers in one place.
-    from phoenix.trace.llama_index import OpenInferenceTraceCallbackHandler
-
     debug_logger = logging.getLogger("debug")
     debug_logger.setLevel(logging.DEBUG)
     callback_handlers = [
@@ -132,10 +131,6 @@ def create_callback_manager(should_use_chainlit: bool = True) -> CallbackManager
     return CallbackManager(callback_handlers)
 
 
-from llama_index.core.agent import AgentRunner
-from llama_index.core.llms.utils import LLMType
-
-
 def create_agent(
     should_use_chainlit: bool,
     should_override_system_prompt: bool = True,
@@ -144,19 +139,11 @@ def create_agent(
 ) -> AgentRunner:
     # Needed for "Retrieved the following sources" to show up on Chainlit.
     Settings.callback_manager = create_callback_manager(should_use_chainlit)
-
-    from llama_index.core.tools import FunctionTool
-
-    from tools import ToolForSuggestingChoices
-
     all_tools = [
         FunctionTool.from_defaults(
             ToolForSuggestingChoices(llm=llm_for_text_completion).suggest_choices,
         )
     ]
-
-    from llama_index.core.agent import ReActAgent
-
     agent = ReActAgent.from_tools(
         tools=all_tools,
         verbose=True,
