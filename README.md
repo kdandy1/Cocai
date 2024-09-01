@@ -15,7 +15,25 @@ Inspired by the many impressive CoC replay videos on Bilibili, I'm programming t
 
 受到哔哩哔哩上那么多令人印象深刻的 CoC replay 视频的启发，我这个聊天机器人会以中文运行。
 
-计划：
+## Usage
 
-- [ ] 写一个推荐技能的tool。其input应为对场景的描述。直接读取 `choices_prompt.md` 的内容，填充 `{{situation}}`，然后让LLM自动补完即可。
+First, ensure that your local Ollama server has already downloaded the `qwen2:7b` model. If you haven't (or aren't sure), run the following command:
+
+首先，确保你的本地 Ollama 服务器已经下载了 `qwen2:7b` 模型。如果你没有（或者不确定），运行以下命令：
+
+```shell
+ollama pull qwen2:7b
+```
+
+You only have to this once in a lifetime. After that, you can start the chatbot by running:
+
+这个操作只需要做一次。之后，你可以通过运行以下命令来启动聊天机器人：
+
+```shell
+just serve
+```
+
+## 计划
+
+- [x] 写一个推荐技能的tool。其input应为对场景的描述。直接读取 `choices_prompt.md` 的内容，填充 `{{situation}}`，然后让LLM自动补完即可。
 - [ ] 在建立自己的车卡功能之前，先写一个其他车卡工具的parser？例如[猫爷TRPG的车卡工具](https://maoyetrpg.com/ckshare.html)。
