@@ -1,4 +1,4 @@
-# CoCai
+# ![](public/logo_light.png) CoCai
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
@@ -6,6 +6,8 @@
 A chatbot that plays Call of Cthulhu (CoC) with you, powered by AI.
 
 <img width="2317" alt="image" src="https://github.com/user-attachments/assets/4617c031-72f3-4915-8582-fd8700b0f725">
+
+_(Logo by [@Norod78](https://linktr.ee/Norod78), originally [published on Civitai](https://civitai.com/images/1231343))_
 
 ## Usage
 
