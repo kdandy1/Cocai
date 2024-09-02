@@ -18,7 +18,8 @@ class ToolForSuggestingChoices:
         self, situation: str = Field(description="a brief description of the situation")
     ) -> str:
         """
-        If the user wants to know what they can do in a particular situation (and what the possible consequences might be), you can use this tool.
+        If the user wants to know what skills their character can use in a particular situation (and what the possible consequences might be), you can use this tool.
+        Note: This tool can only be used when the game is in progress. This is not a tool for meta-tasks like character creation.
         """
         prompt = self.__prompt.format(situation=situation)
         return Settings.llm.complete(prompt)
