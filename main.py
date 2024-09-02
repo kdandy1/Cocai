@@ -21,7 +21,12 @@ from rich.logging import RichHandler
 from rich.traceback import install
 
 from my_monkey_patch import ChainlitCallbackHandler
-from tools import ToolForSuggestingChoices, roll_a_dice, roll_a_skill
+from tools import (
+    ToolForConsultingTheModule,
+    ToolForSuggestingChoices,
+    roll_a_dice,
+    roll_a_skill,
+)
 
 console = Console()
 
@@ -126,6 +131,9 @@ def create_agent(
         FunctionTool.from_defaults(
             ToolForSuggestingChoices().suggest_choices,
             return_direct=True,
+        ),
+        FunctionTool.from_defaults(
+            ToolForConsultingTheModule().consult_the_game_module,
         ),
         FunctionTool.from_defaults(
             roll_a_dice,

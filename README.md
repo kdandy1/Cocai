@@ -23,6 +23,16 @@ Install [`just`](https://github.com/casey/just), a command runner. I use this be
 
 Written in Python, this project uses the Rust-based package manager [`uv`](https://docs.astral.sh/uv/). It does not require you to explicitly create a virtual environment.
 
+**Prepare a CoC module**. Unsure which to pick? Start with [_“Clean Up, Aisle Four!”_][a4] by [Dr. Michael C. LaBossiere][mc].
+You'll need it in Markdown format, though. If you can only find the PDF edition, you can:
+1. upload it to Google Drive,
+2. open it with Google Docs,
+3. download it as Markdown, and finally
+4. do some cleanings.
+
+[a4]: https://shadowsofmaine.wordpress.com/wp-content/uploads/2008/03/cleanup.pdf
+[mc]: https://lovecraft.fandom.com/wiki/Michael_LaBossiere
+
 ### Running the Chatbot
 
 You can start the chatbot by running:

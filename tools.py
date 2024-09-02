@@ -5,7 +5,8 @@ import random
 from enum import IntEnum
 from pathlib import Path
 
-from llama_index.core import Settings
+from llama_index.core import Settings, SimpleDirectoryReader, VectorStoreIndex
+from llama_index.core.base.base_query_engine import BaseQueryEngine
 from pydantic import Field
 
 
@@ -21,6 +22,52 @@ class ToolForSuggestingChoices:
         """
         prompt = self.__prompt.format(situation=situation)
         return Settings.llm.complete(prompt)
+
+
+class ToolForConsultingTheModule:
+    query_engine: BaseQueryEngine = None
+
+    def __init__(
+        self,
+        path_to_module_folder: Path = Path("game_modules/"),
+    ):
+        documents = SimpleDirectoryReader(
+            input_dir=str(path_to_module_folder),
+            # https://docs.llamaindex.ai/en/stable/module_guides/loading/simpledirectoryreader.html#reading-from-subdirectories
+            recursive=True,
+            # https://docs.llamaindex.ai/en/stable/module_guides/loading/simpledirectoryreader.html#restricting-the-files-loaded
+            # Before including image files here, `mamba install pillow`.
+            # Before including audio files here, `pip install openai-whisper`.
+            required_exts=[".md", ".txt"],
+        ).load_data()
+        index = VectorStoreIndex.from_documents(
+            # https://docs.llamaindex.ai/en/stable/api_reference/indices/vector_store.html#llama_index.indices.vector_store.base.VectorStoreIndex.from_documents
+            documents=documents,
+            show_progress=True,
+        )
+        self.query_engine = index.as_query_engine(
+            similarity_top_k=5,
+            # For a query engine hidden inside an Agent, streaming really doesn't make sense.
+            # https://docs.llamaindex.ai/en/stable/module_guides/deploying/query_engine/streaming.html#streaming
+            streaming=False,
+        )
+
+    def consult_the_game_module(
+        self,
+        query: str = Field(
+            description="a brief description of what you want to consult about"
+        ),
+    ) -> str:
+        """
+        If you feel you need to consult the module ("playbook" / handbook) about:
+
+        - how the story should progress,
+        - some factual data, or
+        - how the situation / a particular NPC is set up,
+
+        you can use this tool.
+        """
+        return self.query_engine.query(query).response or ""
 
 
 def roll_a_dice(
