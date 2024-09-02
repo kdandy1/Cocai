@@ -3,6 +3,7 @@ chat_store.json
 chroma_db/
 llamaIndex_storage/
 game_modules/
+.files/
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,pycharm,intellij,macos,linux,windows,git,jupyternotebooks
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,pycharm,intellij,macos,linux,windows,git,jupyternotebooks
