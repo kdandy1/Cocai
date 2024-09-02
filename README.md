@@ -43,7 +43,21 @@ You can start the chatbot by running:
 just serve
 ```
 
-## Design
+# Let's write an AI Keeper for _Call of Cthulhu_!
+
+## Introduction
+
+**Call of Cthulhu** (CoC) is a tabletop role-playing game based on the works of H.P. Lovecraft. It involves 3~8 players, but coordinating everyone's schedule can feel like trying to align the stars. That's where an AI Keeper comes in. It can run a game for you, anytime, anywhere.
+
+In this post, we'll build a chatbot that acts as the game master ("Keeper") in a single-player CoC game. It will narrate the story, play the NPCs, and roll the dices. This means:
+
+- **We'll use large language models (LLMs).** As a narrative-driven game, CoC involves lots of natural-language interactions. Often, the game master ("Keeper" in the CoC world) has to improvise the story based on the players' actions, which demands latent knowledge and common sense. This is where LLMs shine.
+- **The chatbot will be agentic.** As the Keeper, our AI needs to consult the rulebook, roll dices, and examine player statuses. Each of those capabilities can be delegated to a "tool" that the AI can use. The ability to use tools, in this context, is called "having agency".
+- **We'll use retrival-augmented generation (RAG).** While hosting the game, the AI Keeper often need to look up rules, consult playbooks, and even searching the internet for facts. We can't possibly train an LLM on all that knowledge (or guarantee its accuracy in recalling anything). Instead, we'll have the AI agent retrieve data on-demand. See [_Why RAG is Big_](https://blog.myli.page/why-rag-is-big-aa60282693dc).
+
+Are you looking for real-world examples of building AI applications? This project is a great starting point. Let's dive in!
+
+## Background
 
 A typical game of CoC involves a Keeper (the game master) and Investigators (the players). The Keeper narrates the story, and the Investigators interact with the world. The Keeper also plays the roles of the non-player characters (NPCs).
 
@@ -70,4 +84,49 @@ graph TD
     I --> J([Game ends])
 ```
 
-**Character building** is a process that involves quite some math, which isn't LLM's strong suit. Fortunately, some CoC Modules have preset characters for the Investigators. Even if they didn't, there are [generic, pre-built characters](https://www.dholeshouse.org/CharacterLibrary/CoC7edInvestigators) you can bring to the game. In this sense, I consider "character creation" optional. For the sake of simplicity, let's omit character-building capabilities from this chatbot.
+Now, let's examine each component in detail and see how we want to implement them.
+
+## Design
+
+**Character building** is a process that involves quite some math, which isn't LLM's strong suit. Fortunately, some CoC Modules have preset characters for the Investigators. Even if they didn't, there are [generic, pre-built characters][bk] you can bring to the game. In this sense, I consider "character creation" optional. For the sake of simplicity, let's omit character-building capabilities from this chatbot.
+
+[bk]: https://www.dholeshouse.org/CharacterLibrary/CoC7edInvestigators
+
+Another math-heavy part is **dice rolling**. Researchers [have shown][sp] that LLMs tend to be biased when generating random numbers. Let's delegate this task to a tool written in traditional programming code.
+For dice outcomes, the CoC rulebook has [an exact mapping][em] for numerical values to _degrees of success_ (success, fail, fumble, etc.). Things like this should also be handled by traditional code and packaged into a tool.
+
+[sp]: https://people.csail.mit.edu/renda/llm-sampling-paper
+[em]: https://cthulhuwiki.chaosium.com/rules/game-system.html#skill-rolls-and-difficulty-levels
+
+**Storytelling** is the fun part. Our AI Keeper should be faithful to the module's story and follow the rules. This means we should give the chatbot a tool for **looking up details from the module or the rulebook**. We can prepare both documents beforehand in some parser-friendly format.
+
+In case the Keeper needs to improvise, a similar tool should be available for **searching the internet**. There are search engines built specifically for LLMs to use via API calls, such as [Tavily](https://tavily.com/). If you prefer some wider-adopted search engine, that's easy, too: Popular RAG frameworks like [LlamaIndex][li] have integrations for big names like [Google][gg] and [Bing][bn].
+
+[li]: https://www.llamaindex.ai/
+[gg]: https://llamahub.ai/l/tools/llama-index-tools-google
+[bn]: https://llamahub.ai/l/tools/llama-index-tools-bing-search
+
+A final data source to consider may be its own **notebook**. This alleviates the problem if your chatbot tend to miss details previously appeared in the conversation, perhaps due to a short context window in your LLM of choice. We can invite the LLM to track with it the status of characters, branching storylines, and improvised details. Unlike the tools we've designed so dar, this capability should be broken down into two parts: one for taking notes and another for reading them.
+
+Apart from function-calling tools and data-retrieving tools, let's spice it up with some LLM-powered tools. For example, a player may feel disoriented and ask the Keeper, "What can I do in this dark cave?" A generic chatbot may say something like, "You can explore the cave or go back." But a good Keeper should suggest some skills appropriate for the situation and forecast the possible outcomes. We can have a tool that generates such recommendations.
+
+With the components translated into tools, we can now design the chatbot's workflow:
+
+```mermaid
+graph TD
+    A([Game starts]) --> C[/"`Keeper narrates`"/]
+    subgraph a [main loop]
+        C --> ec{"`encounter/challenge?`"}
+        ec-->|Y| G
+        ec --> |N| D[/"`User input`"/]
+        D --> F["`Use skill`"]
+        D --> |Free-form role-playing| H
+        F --> G["`Roll dices`"]
+        G --> H["`Register changes (story progression, character status, ...)`"]
+        H --> C
+        D --> |"`ask for clarifications/suggestions/...`"| C
+    end
+    data[("`References (rulebooks, CoC module, search engine, ...)`")] --> C
+    note[("`Notebook (state, improvised details, ...)`")] --> C
+    H --> note
+```
