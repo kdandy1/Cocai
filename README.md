@@ -9,6 +9,16 @@ A chatbot that plays Call of Cthulhu (CoC) with you, powered by AI.
 
 _(Logo by [@Norod78](https://linktr.ee/Norod78), originally [published on Civitai](https://civitai.com/images/1231343))_
 
+## Demo
+
+Try asking Cocai to generate a character for you:
+
+> Can you generate a character for me? Let's call him "Don Joe". Describe what kind of guy he is, then tabulate his stats.
+
+<img width="522" alt="image" src="https://github.com/user-attachments/assets/1d364b80-2ebc-40e5-92ec-b182b89d0a7a">
+
+Under the hood, Cocai uses [Cochar](https://www.cochar.pl/).
+
 ## Usage
 
 ### Pre-requisites
