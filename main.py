@@ -30,16 +30,27 @@ from tools import (
 
 console = Console()
 
+SHOULD_USE_PHOENIX = True
 # "Phoenix can display in real time the traces automatically collected from your LlamaIndex application."
 # https://docs.llamaindex.ai/en/stable/module_guides/observability/observability.html
-px.launch_app()
+if SHOULD_USE_PHOENIX:
+    px.launch_app()
+
+SHOULD_USE_RICH = True
 
 # https://rich.readthedocs.io/en/latest/logging.html#handle-exceptions
 logging.basicConfig(
+    # This can get really verbose if set to `logging.DEBUG`.
     level=logging.INFO,
     format="%(message)s",
     datefmt="[%X]",
-    handlers=[RichHandler(rich_tracebacks=True, console=console)],
+    handlers=[
+        (
+            RichHandler(rich_tracebacks=True, console=console)
+            if SHOULD_USE_RICH
+            else logging.StreamHandler()
+        )
+    ],
     # This function does nothing if the root logger already has handlers configured,
     # unless the keyword argument force is set to True.
     # https://docs.python.org/3/library/logging.html#logging.basicConfig
@@ -47,12 +58,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# https://rich.readthedocs.io/en/stable/traceback.html#traceback-handler
-logger.debug("Installing rich traceback handler.")
-old_traceback_handler = install(show_locals=True, console=console)
-logger.debug(
-    f"The global traceback handler has been swapped from {old_traceback_handler} to {sys.excepthook}."
-)
+if SHOULD_USE_RICH:
+    # https://rich.readthedocs.io/en/stable/traceback.html#traceback-handler
+    logger.debug("Installing rich traceback handler.")
+    old_traceback_handler = install(show_locals=True, console=console)
+    logger.debug(
+        f"The global traceback handler has been swapped from {old_traceback_handler} to {sys.excepthook}."
+    )
 
 # https://docs.llamaindex.ai/en/stable/module_guides/storing/chat_stores/#simplechatstore
 try:
@@ -80,8 +92,9 @@ def create_callback_manager(should_use_chainlit: bool = True) -> CallbackManager
     debug_logger.setLevel(logging.DEBUG)
     callback_handlers = [
         LlamaDebugHandler(logger=debug_logger),
-        OpenInferenceTraceCallbackHandler(),
     ]
+    if SHOULD_USE_PHOENIX:
+        callback_handlers.append(OpenInferenceTraceCallbackHandler())
     if should_use_chainlit:
         callback_handlers.append(
             # TODO: When https://github.com/Chainlit/chainlit/pull/1285 is merged,
