@@ -11,13 +11,24 @@ _(Logo by [@Norod78](https://linktr.ee/Norod78), originally [published on Civita
 
 ## Demo
 
-Try asking Cocai to generate a character for you:
+Check out this transcript:
+
+<img width="786" alt="image" src="https://github.com/user-attachments/assets/e039276c-d495-4596-b547-acfc66ce6a84">
+
+In the first message, I asked Cocai to generate a character for me:
 
 > Can you generate a character for me? Let's call him "Don Joe". Describe what kind of guy he is, then tabulate his stats.
 
-<img width="522" alt="image" src="https://github.com/user-attachments/assets/1d364b80-2ebc-40e5-92ec-b182b89d0a7a">
+Under the hood, Cocai used [Cochar](https://www.cochar.pl/). In the first couple of attempts, Cocai forgot to provide some required parameters. Cocai fixed that problem and successfully generated a character profile from Cochar.
 
-Under the hood, Cocai uses [Cochar](https://www.cochar.pl/).
+Then, I asked Cocai what I -- playing the character of Mr. Don Joe -- can do, being stuck in a dark cave. It suggested a couple of options and described the potential outcomes associated with each choice.
+
+I then asked Cocai to roll a skill check for me, Spot Hidden. Based on the chat history, Cocai was able to recall that Mr. Joe had a Spot Hidden skill of 85%. It rolled the dice, got a successful outcome, and took some inspiration from its 2nd response to progress the story.
+
+Thanks to the chain-of-thought (CoT) visualization feature, you can unfold the tool-using steps and verify yourself that Cocai was indeed able to recall the precise value of Joe's Spot Hidden skill:
+
+<img width="771" alt="image" src="https://github.com/user-attachments/assets/8ae52b80-b3c0-4978-9649-64039a5c113e">
+
 
 ## Usage
 
