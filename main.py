@@ -26,6 +26,7 @@ from tools import (
     ToolForSuggestingChoices,
     roll_a_dice,
     roll_a_skill,
+    tool_for_creating_character,
 )
 
 console = Console()
@@ -154,6 +155,7 @@ def create_agent(
         FunctionTool.from_defaults(
             roll_a_skill,
         ),
+        tool_for_creating_character,
     ]
     agent = ReActAgent.from_tools(
         tools=all_tools,
