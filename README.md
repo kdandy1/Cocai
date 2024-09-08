@@ -160,10 +160,10 @@ Unlike the flow of the game itself, the flow of the bot constitutes an infinite 
 
 ### Picking a LLM and a function-calling paradigm
 
-Since I started building AI agents last year, I've always been using [the ReAct paradigm][ra]. It simulates function-calling capabilities with a purely semantic approach, allowing me to try out ideas with locally-served LLMs, which rarely support calling functions natively.
+Since I started building AI agents last year, **I've always been using [the ReAct paradigm][ra]**. It simulates function-calling capabilities with a purely semantic approach, allowing me to try out ideas with locally-served LLMs, which rarely support calling functions natively.
 
-This feature may be better illustrated by comparison. Taking [the LlamaIndex framework][li] as an instance, where interactions between an AI agent and its underlying LLM are carried out by AgentWorkers:
-- A `ReActAgentWorker` describes all the tools in the system prompt **in English**, eavesdrops to the LLM's "inner dialogue" about what tool it wants to use, executes it, and sends back to the LLM for user-facing responses. (See my previous post, [_Why RAG is big_][wr], where I explained ReACt in more details.)
+This feature may be **better illustrated by comparison**. Taking [the LlamaIndex framework][li] as an instance, where interactions between an AI agent and its underlying LLM are carried out by AgentWorkers:
+- A `ReActAgentWorker` describes all the tools in the system prompt **in English**, eavesdrops to the LLM's "inner dialogue" about what tool it wants to use, executes it, and sends back to the LLM for user-facing responses. (See my previous post, [_Why RAG is big_][wr], where I explained ReAct in more details.)
 - An `OpenAIAgentWorker` sends the tooling information according to [the OpenAI API's specifications][oas] **in JSON**, sees which tool the remote server says the LLM wants to execute, executes it, and sends the result back to OpenAI for user-facing responses.
 
 **ReAct has its own issues, though.** The natural-language approach can be error-prone. The three major problems I witnessed (and fixed for LlamaIndex) are [malformed JSON strings](https://github.com/run-llama/llama_index/pull/10323), [hallucinated tools](https://github.com/run-llama/llama_index/pull/12207), and [failure to adhere to "inner voice" formats](https://github.com/run-llama/llama_index/pull/12300). Although we can ask the LLM to correct its own mistakes, it's better to prevent them from happening in the first place, just like native function-calling LLMs would.
