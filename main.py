@@ -117,7 +117,7 @@ def create_agent(
     # Otherwise, it messes up with Arize Phoenix: LLM calls won't be captured as parts of an Agent Step.
     Settings.llm = Ollama(
         # https://ollama.com/library/qwen2:7b-instruct
-        model="qwen2:7b",
+        model="mistral:7b-instruct-v0.3-q6_K",
         request_timeout=60,  # secs
         # Uncomment the following line to use the LLM server running on my gaming PC.
         # base_url="http://10.147.20.237:11434",
@@ -181,6 +181,16 @@ def create_agent(
 
 @cl.on_chat_start
 async def factory():
+    await cl.Message(
+        content="",
+        elements=[
+            cl.Text(
+                name="Welcome! I'm CoCai.",
+                content="I'm a chatbot that plays _Call of Cthulhu (CoC)_ with you.",
+                display="inline",
+            )
+        ],
+    ).send()
     cl.user_session.set("agent", create_agent(should_use_chainlit=True))
 
 
