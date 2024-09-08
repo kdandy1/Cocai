@@ -179,18 +179,34 @@ def create_agent(
     return agent
 
 
+@cl.set_starters
+async def set_starters():
+    return [
+        cl.Starter(
+            label="Roll a 7-faced dice. Outcome?",
+            message="Roll a 7-faced dice just for fun. What's the outcome?",
+            icon="/public/avatars/roll_a_dice.png",
+        ),
+        cl.Starter(
+            label="I'm stuck in a cave. What skills to use?",
+            message="I'm stuck in a dark cave. What can I do?",
+            icon="/public/avatars/suggest_choices.png",
+        ),
+        cl.Starter(
+            label="Create a character for me.",
+            message='Can you generate a character for me? Let\'s call him "Don Joe". Describe what kind of guy he is.',
+            icon="/public/avatars/create_character.png",
+        ),
+        cl.Starter(
+            label="What's the story background?",
+            message="Briefly describe the story background of the module we are playing today.",
+            icon="/public/avatars/consult_the_game_module.png",
+        ),
+    ]
+
+
 @cl.on_chat_start
 async def factory():
-    await cl.Message(
-        content="",
-        elements=[
-            cl.Text(
-                name="Welcome! I'm CoCai.",
-                content="I'm a chatbot that plays _Call of Cthulhu (CoC)_ with you.",
-                display="inline",
-            )
-        ],
-    ).send()
     cl.user_session.set("agent", create_agent(should_use_chainlit=True))
 
 
