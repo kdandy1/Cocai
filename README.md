@@ -74,7 +74,7 @@ In this post, we'll build a chatbot that acts as the game master ("Keeper") in a
 
 - **We'll use large language models (LLMs).** As a narrative-driven game, CoC involves lots of natural-language interactions. Often, the game master ("Keeper" in the CoC world) has to improvise the story based on the players' actions, which demands latent knowledge and common sense. This is where LLMs shine.
 - **The chatbot will be agentic.** As the Keeper, our AI needs to consult the rulebook, roll dices, and examine player statuses. Each of those capabilities can be delegated to a "tool" that the AI can use. The ability to use tools, in this context, is called "having agency".
-- **We'll use retrival-augmented generation (RAG).** While hosting the game, the AI Keeper often need to look up rules, consult playbooks, and even searching the internet for facts. We can't possibly train an LLM on all that knowledge (or guarantee its accuracy in recalling anything). Instead, we'll have the AI agent retrieve data on-demand. See [_Why RAG is Big_](https://blog.myli.page/why-rag-is-big-aa60282693dc).
+- **We'll use retrival-augmented generation (RAG).** While hosting the game, the AI Keeper often need to look up rules, consult playbooks, and even searching the internet for facts. We can't possibly train an LLM on all that knowledge (or guarantee its accuracy in recalling anything). Instead, we'll have the AI agent retrieve data on-demand. See [_Why RAG is Big_][wr].
 
 Are you looking for real-world examples of building AI applications? This project is a great starting point. Let's dive in!
 
@@ -134,7 +134,7 @@ With the components translated into tools, we can now design the chatbot's workf
 ```mermaid
 flowchart TD
     S([Start]) -->
-    A[/Player input/] --> B{"Can I answer with confidence?"}
+    A[/Player input/] --> |Everything else| B{"Can I answer with confidence?"}
     B --> |Not yet| C{"Choose a tool"}
 
     C --> D[Use Cochar]
@@ -151,4 +151,58 @@ flowchart TD
     B --> |Yes| G[/Generate response/]
 
     G --> |Continue loop| A
+    A --> |Quit| End([End])
 ```
+
+Unlike the flow of the game itself, the flow of the bot constitutes an infinite loop. (Notice the absence of an "end" terminal from the diagram.) This is because the chatbot should be able to handle multiple questions from the player in a single session. The player can close the window whenever they want.
+
+## Implementation
+
+### Picking a LLM and a function-calling paradigm
+
+Since I started building AI agents last year, I've always been using [the ReAct paradigm][ra]. It simulates function-calling capabilities with a purely semantic approach, allowing me to try out ideas with locally-served LLMs, which rarely support calling functions natively.
+
+This feature may be better illustrated by comparison. Taking [the LlamaIndex framework][li] as an instance, where interactions between an AI agent and its underlying LLM are carried out by AgentWorkers:
+- A `ReActAgentWorker` describes all the tools in the system prompt **in English**, eavesdrops to the LLM's "inner dialogue" about what tool it wants to use, executes it, and sends back to the LLM for user-facing responses. (See my previous post, [_Why RAG is big_][wr], where I explained ReACt in more details.)
+- An `OpenAIAgentWorker` sends the tooling information according to [the OpenAI API's specifications][oas] **in JSON**, sees which tool the remote server says the LLM wants to execute, executes it, and sends the result back to OpenAI for user-facing responses.
+
+**ReAct has its own issues, though.** The natural-language approach can be error-prone. The three major problems I witnessed (and fixed for LlamaIndex) are [malformed JSON strings](https://github.com/run-llama/llama_index/pull/10323), [hallucinated tools](https://github.com/run-llama/llama_index/pull/12207), and [failure to adhere to "inner voice" formats](https://github.com/run-llama/llama_index/pull/12300). Although we can ask the LLM to correct its own mistakes, it's better to prevent them from happening in the first place, just like native function-calling LLMs would.
+
+**The situation has improved.** This year, many more open-source LLMs have started supporting native function calls. The most prominent of them may be [Llama 3.1][l3], [released](https://ai.meta.com/blog/meta-llama-3-1/) on July 23, 2024. Two days later, Ollama published [an example](https://ollama.com/blog/tool-support) of how to have Llama 3.1 use tools when served via Ollama. This looks promising, so I decided to try it out in this project.
+
+We can use the `OpenAIAgentWorker` to make use of Llama 3.1's tooling capabilities. The only caveat is that `OpenAIAgentWorker` expects an OpenAI LLM. If we continued to use the LLM class `llama_index.llms.ollama.Ollama`, `OpenAIAgentWorker` would complain "llm must be a OpenAI instance". Luckily, Ollama offers an OpenAI-compatible API, so we can simply use the LLM class `llama_index.llms.openai_like.OpenAILike` as a workaround. Here's a minimal reproducible example ([gist](https://gist.github.com/tslmy/3e71685d632f4ed5ba493af97e75c07d)):
+
+```python
+import random
+
+from llama_index.agent.openai import OpenAIAgent
+from llama_index.core import Settings
+from llama_index.core.tools import FunctionTool
+from llama_index.llms.openai_like import OpenAILike
+from pydantic import Field
+
+
+def roll_a_dice(
+    n: int = Field(description="number of faces of the dice to roll", gt=0, le=100),
+) -> int:
+    """Roll an n-faced dice and return the result."""
+    return random.randint(1, n)
+
+
+if __name__ == "__main__":
+    Settings.llm = OpenAILike(
+        model="llama3.1",
+        api_base="http://localhost:11434/v1",
+        api_key="ollama",
+        is_function_calling_model=True,
+        is_chat_model=True,
+    )
+    agent = OpenAIAgent.from_tools(tools=[FunctionTool.from_defaults(roll_a_dice)])
+    print(agent.chat("Roll a 7-faced dice just for fun. What's the outcome?"))
+```
+
+[oas]: https://platform.openai.com/docs/api-reference/chat/create#chat-create-tools
+[l3]: https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md
+[ra]: https://arxiv.org/abs/2210.03629
+[li]: https://www.llamaindex.ai/
+[wr]: https://blog.myli.page/why-rag-is-big-aa60282693dc
