@@ -144,7 +144,6 @@ def create_agent(
     all_tools = [
         FunctionTool.from_defaults(
             ToolForSuggestingChoices().suggest_choices,
-            return_direct=True,
         ),
         FunctionTool.from_defaults(
             ToolForConsultingTheModule().consult_the_game_module,
