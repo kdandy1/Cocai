@@ -34,13 +34,10 @@ Thanks to the chain-of-thought (CoT) visualization feature, you can unfold the t
 
 ### Pre-requisites
 
-Install [Ollama](https://ollama.com/download), a local server that runs large language models (LLMs). This chatbot uses Ollama to generate text. If you prefer to use more powerful LLMs, you can edit the code.
-
-Ensure that your local Ollama server has already downloaded the `qwen2:7b` model. If you haven't (or aren't sure), run the following command:
-
-```shell
-ollama pull qwen2:7b
-```
+Bring your own large language model (LLM).
+- The easiest (and perhaps highest-quality) way would be to provide an API key to OpenAI. Simply add `OPENAI_API_KEY=sk-...` to a `.env` file in the project root.
+- With the absence of an OpenAI API key, the chatbot will default to using [Ollama](https://ollama.com/download), a program that serves LLMs locally.
+  - Ensure that your local Ollama server has already downloaded the `llama3.1` model. If you haven't (or aren't sure), run `ollama pull llama3.1`.
 
 Install [`just`](https://github.com/casey/just), a command runner. I use this because I always tend to forget the exact command to run.
 

@@ -1,17 +1,18 @@
 #!/usr/bin/env python
 import logging
+import os
 import sys
 
 import chainlit as cl
 import phoenix as px
+from llama_index.agent.openai import OpenAIAgent
 from llama_index.core import Settings
-from llama_index.core.agent import AgentRunner, ReActAgent
+from llama_index.core.agent import AgentRunner
 from llama_index.core.callbacks import CallbackManager, LlamaDebugHandler
 from llama_index.core.memory import ChatMemoryBuffer
 from llama_index.core.storage.chat_store import SimpleChatStore
 from llama_index.core.tools import FunctionTool
 from llama_index.embeddings.ollama import OllamaEmbedding
-from llama_index.llms.ollama import Ollama
 from phoenix.trace.llama_index import OpenInferenceTraceCallbackHandler
 
 # If Python’s builtin readline module is previously loaded, elaborate line editing and history features will be available.
@@ -115,23 +116,27 @@ def create_agent(
     # At least when Chainlit is involved, LLM initializations must happen upon the `@cl.on_chat_start` event,
     # not in the global scope.
     # Otherwise, it messes up with Arize Phoenix: LLM calls won't be captured as parts of an Agent Step.
-    Settings.llm = Ollama(
-        # https://ollama.com/library/qwen2:7b-instruct
-        model="mistral:7b-instruct-v0.3-q6_K",
-        request_timeout=60,  # secs
-        # Uncomment the following line to use the LLM server running on my gaming PC.
-        # base_url="http://10.147.20.237:11434",
-        streaming=True,
-        temperature=0.01,
-        additional_kwargs={
-            "stop": [
-                "<|im_start|>",
-                "<|im_end|>",
-                "Observation:",
-            ],
-            "seed": 42,
-        },
-    )
+    if api_key := os.environ.get("OPENAI_API_KEY", None):
+        logger.info("Using OpenAI API.")
+        from llama_index.llms.openai import OpenAI
+
+        Settings.llm = OpenAI(
+            model="gpt-4o-mini",
+            api_key=api_key,
+            is_function_calling_model=True,
+            is_chat_model=True,
+        )
+    else:
+        logger.info("Using Ollama's OpenAI-compatible API.")
+        from llama_index.llms.openai_like import OpenAILike
+
+        Settings.llm = OpenAILike(
+            model="llama3.1",
+            api_base="http://localhost:11434/v1",
+            api_key="ollama",
+            is_function_calling_model=True,
+            is_chat_model=True,
+        )
 
     Settings.embed_model = OllamaEmbedding(
         # https://ollama.com/library/nomic-embed-text
@@ -156,13 +161,6 @@ def create_agent(
         ),
         tool_for_creating_character,
     ]
-    agent = ReActAgent.from_tools(
-        tools=all_tools,
-        verbose=True,
-        # x2: An observation step also takes as an iteration.
-        # +1: The final output reasoning step needs to take a spot.
-        memory=chat_memory,
-    )
     # Override the default system prompt for ReAct chats.
     with open("prompts/system_prompt.md") as f:
         MY_SYSTEM_PROMPT = f.read()
@@ -171,10 +169,14 @@ def create_agent(
         "{allowance}",
         str(max_action_steps),
     )
-    from llama_index.core import PromptTemplate
-
-    system_prompt = PromptTemplate(my_system_prompt)
-    agent.update_prompts({"agent_worker:system_prompt": system_prompt})
+    agent = OpenAIAgent.from_tools(
+        system_prompt=my_system_prompt,
+        tools=all_tools,
+        verbose=True,
+        # x2: An observation step also takes as an iteration.
+        # +1: The final output reasoning step needs to take a spot.
+        memory=chat_memory,
+    )
     return agent
 
 
