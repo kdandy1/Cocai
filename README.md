@@ -109,9 +109,7 @@ Now, let's examine each component in detail and see how we want to implement the
 
 ## Design
 
-**Character building** is a process that involves quite some math, which isn't LLM's strong suit. Fortunately, some CoC Modules have preset characters for the Investigators. Even if they didn't, there are [generic, pre-built characters][bk] you can bring to the game. In this sense, I consider "character creation" optional. For the sake of simplicity, let's omit character-building capabilities from this chatbot.
-
-[bk]: https://www.dholeshouse.org/CharacterLibrary/CoC7edInvestigators
+**Character building** is a process that involves quite some math, which isn't LLM's strong suit. Fortunately, there is a Python package for that: [Cochar](https://www.cochar.pl/) by Adam Walkiewicz. We can simply register it as a tool for our AI Keeper to use.
 
 Another math-heavy part is **dice rolling**. Researchers [have shown][sp] that LLMs tend to be biased when generating random numbers. Let's delegate this task to a tool written in traditional programming code.
 For dice outcomes, the CoC rulebook has [an exact mapping][em] for numerical values to _degrees of success_ (success, fail, fumble, etc.). Things like this should also be handled by traditional code and packaged into a tool.
@@ -134,20 +132,23 @@ Apart from function-calling tools and data-retrieving tools, let's spice it up w
 With the components translated into tools, we can now design the chatbot's workflow:
 
 ```mermaid
-graph TD
-    A([Game starts]) --> C[/"`Keeper narrates`"/]
-    subgraph a [main loop]
-        C --> ec{"`encounter/challenge?`"}
-        ec-->|Y| G
-        ec --> |N| D[/"`User input`"/]
-        D --> F["`Use skill`"]
-        D --> |Free-form role-playing| H
-        F --> G["`Roll dices`"]
-        G --> H["`Register changes (story progression, character status, ...)`"]
-        H --> C
-        D --> |"`ask for clarifications/suggestions/...`"| C
-    end
-    data[("`References (rulebooks, CoC module, search engine, ...)`")] --> C
-    note[("`Notebook (state, improvised details, ...)`")] --> C
-    H --> note
+flowchart TD
+    S([Start]) -->
+    A[/Player input/] --> B{"Can I answer with confidence?"}
+    B --> |Not yet| C{"Choose a tool"}
+
+    C --> D[Use Cochar]
+    C --> E[Roll dice]
+        srch[("`internet`")] --> F
+        data[("`Documents (rulebooks, CoC module, ...)`")] --> F
+        note[("`Notebook (state, improvised details, ...)`")] <--> F
+    C --> F[Look up references]
+
+    D --> B
+    E --> B
+    F --> B
+
+    B --> |Yes| G[/Generate response/]
+
+    G --> |Continue loop| A
 ```
