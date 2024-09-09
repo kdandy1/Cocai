@@ -160,6 +160,18 @@ flowchart TD
 
 Unlike the flow of the game itself, the flow of the bot constitutes an infinite loop. (Notice the absence of an "end" terminal from the diagram.) This is because the chatbot should be able to handle multiple questions from the player in a single session. The player can close the window whenever they want.
 
+## Goal / Demo
+
+The end goal for our chatbot is to hold a conversation like the following:
+
+<img width="200" alt="image" src="https://github.com/user-attachments/assets/80642eb4-95f2-46e2-b918-7832a462ce83">
+
+In the dialogue above, I've asked our AI Keeper to generate a character for me. Failing to satisfy the input requirements of the character creation tool, Cocai corrected itself in the next attempt and successfully got a 23-year-old Mr. Don Joe from the tool:
+
+<img width="500" alt="image" src="https://github.com/user-attachments/assets/52ea545d-4f7d-4b2d-b26a-2765678cd8c1">
+
+Cocai was then able to suggest skills appropriate based on the daring situation my Investigator was facing. Subsequently, I asked Cocai to roll a skill check for me, Spot Hidden. Notice that Spot Hidden wasn't mentioned in Don Joe's short biography. Challenged by my inquisition about where that skill value of 51 came from, Cocai was able to consult the game module as well as the internet for a better grounded default. Humbly admitting its mistake, Cocai worked nicely with the player to get the game going.
+
 ## Implementation
 
 You can find the code [here][rp]. I'd also like to encourage you to implement the AI agent yourself.
@@ -299,6 +311,9 @@ In the snippet above, we are reading the API key from the environment variable `
 [pde]: https://pypi.org/project/python-dotenv/
 
 
+
+
 <img width="1098" alt="image" src="https://github.com/user-attachments/assets/097a580a-67fa-4069-bdd6-32cea138976d">
 
 _Photo by [Shane Scarbrough](https://unsplash.com/@darkelfdice?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash) on [Unsplash](https://unsplash.com/photos/text-vQVv4UIrYR4?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash)_
+
