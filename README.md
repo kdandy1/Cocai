@@ -120,6 +120,7 @@ For dice outcomes, the CoC rulebook has [an exact mapping][em] for numerical val
 **Storytelling** is the fun part. Our AI Keeper should be faithful to the module's story and follow the rules. This means we should give the chatbot a tool for **looking up details from the module or the rulebook**. We can prepare both documents beforehand in some parser-friendly format.
 
 <img width="972" alt="A close up of a dragon figurine on a board game photo – Free Rennes Image on Unsplash" src="https://github.com/user-attachments/assets/c402589f-d88a-4104-9775-f94901316207">
+
 _Photo by [Maurice Nguyen](https://unsplash.com/@mauriceng35?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash) on [Unsplash](https://unsplash.com/photos/a-close-up-of-a-dragon-figurine-on-a-board-game-UDGIP29omBM?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash)_
 
 In case the Keeper needs to improvise, a similar tool should be available for **searching the internet**. There are search engines built specifically for LLMs to use via API calls, such as [Tavily](https://tavily.com/). If you prefer some wider-adopted search engine, that's easy, too: Popular RAG frameworks like [LlamaIndex][li] have integrations for big names like [Google][gg] and [Bing][bn].
