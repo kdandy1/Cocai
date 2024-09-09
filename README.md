@@ -182,6 +182,8 @@ This quadrtet of libraries is employed so often in modern AI projects that I'm w
 
 One deviation from my template repo that I'm making in CoCai is the package manager. I'm using [uv](https://docs.astral.sh/uv/) instead of [Poetry](https://python-poetry.org/). This departure is largely inspired by Stuart Ellis's blog post, [Modern Good Practices for Python Development](https://www.stuartellis.name/articles/python-modern-practices/#use-a-project-tool). To summarize, `uv` is faster, closer to Python standards, and more space-efficient. I recommend you to give it a try.
 
+Here's the bare-minimum code to get the chatbot up and running:
+
 ```python
 # import the necessary libraries here
 px.launch_app()
@@ -210,7 +212,7 @@ async def main(message: cl.Message):
     await response_message.send()
 ```
 
-The line `await cl.make_async(agent.chat)(message.content)` may look messy, but it's actually a recommendation from [the Chainlit doc](https://docs.chainlit.io/api-reference/make-async#make-async):
+**A note about asynchronous programming.** The line `await cl.make_async(agent.chat)(message.content)` may look messy, but it's actually a recommendation from [the Chainlit doc](https://docs.chainlit.io/api-reference/make-async#make-async):
 
 > The make_async function takes a synchronous function (for instance a LangChain agent) and returns an asynchronous function that will run the original function in a separate thread. This is useful to run long running synchronous tasks without blocking the event loop.
 
@@ -271,7 +273,30 @@ In [my implementation][rp], I've added support for both the OpenAI-like Ollama A
 
 Here comes the fun part. We need to build the tools that the AI Keeper can use.
 
-Let's start with the easiest
+Let's start with the easiest one, which is **the search engine integration**. As mentioned earlier, we can use [Tavily](https://tavily.com/) for this purpose. LlamaIndex has a well-maintained integration package with Tavily. It's [available](https://llamahub.ai/l/tools/llama-index-tools-tavily-research) in its repository of agentic tools, not-so-creatively named [LlamaHub][lh]. (I'm curious about who started it, calling everything "something-hub". Was it [GitHub](https://github.com/)? [Hugging Face Hub](https://huggingface.co/docs/hub/en/index)? [JupyterHub](https://jupyter.org/hub)?) All we need to do is to install the package and use it in our code like this:
+
+```python
+from llama_index.tools.tavily_research import TavilyToolSpec
+
+if api_key := os.environ.get("TAVILY_API_KEY", None):
+    tavily_tool = TavilyToolSpec(
+        api_key=api_key,
+    ).to_tool_list()
+else:
+    tavily_tool = []
+
+# then...
+    cl.user_session.set("agent",
+      OpenAIAgent.from_tools( # ...
+        tools=tavily_tool + [...],
+    ))
+```
+
+In the snippet above, we are reading the API key from the environment variable `TAVILY_API_KEY`. "Does it mean I have to supply that env var every time I run the script, or do I have to add it into my `.profile` script?", you may ask. No, you don't have to! Here's a lesser-known side effect of using Chainlit: It automatically reads the environment variables from a `.env` file in the project root, thanks to [its usage][iu] of the [`python-dotenv`][pde] package. The more you know.
+
+[lh]: https://llamahub.ai/
+[iu]: https://github.com/Chainlit/chainlit/blob/d4eeeb8f8055e1d5f90607f8cfcbf28b89618952/backend/chainlit/__init__.py#L6
+[pde]: https://pypi.org/project/python-dotenv/
 
 
 <img width="1098" alt="image" src="https://github.com/user-attachments/assets/097a580a-67fa-4069-bdd6-32cea138976d">
