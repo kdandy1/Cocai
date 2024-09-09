@@ -162,9 +162,63 @@ Unlike the flow of the game itself, the flow of the bot constitutes an infinite 
 
 ## Implementation
 
+You can find the code [here][rp]. I'd also like to encourage you to implement the AI agent yourself.
+
+[rp]: https://github.com/StarsRail/Cocai/
+
+### Starting off with a skeleton
+
+Let's start by creating a skeleton for our AI Keeper. For the chatbot part, we'll use the following libraries:
+
+- [LlamaIndex](https://www.llamaindex.ai/) is a framework for building LLM applications.
+  We'll be using its agentic AI capabilities.
+- [Chainlit](https://chainlit.io/) provides a web UI to LlamaIndex that looks like ChatGPT.
+- [Arize Phoenix](https://phoenix.arize.com/) is an observability platform.
+  We use it to inspect the AI's chains of thought (CoTs), which are generally hidden away from the user-facing UI that Chainlit provides.
+- [Pydantic](https://pydantic.dev/) is a data validation library.
+  We'll use it to describe to the LLM the inputs each tool expects.
+
+This quadrtet of libraries is employed so often in modern AI projects that I'm willing to name it "the LCAP stack". (Anyone remembers [the MEAN stack](https://www.mongodb.com/resources/languages/mean-stack) for webdevs and [the TICK stack](https://www.influxdata.com/blog/introduction-to-influxdatas-influxdb-and-tick-stack/) for time series data?) In fact, I have a [template repository](https://github.com/tslmy/agent) that sets up the LCAP stack for you. You can use it as a starting point for your own AI projects.
+
+One deviation from my template repo that I'm making in CoCai is the package manager. I'm using [uv](https://docs.astral.sh/uv/) instead of [Poetry](https://python-poetry.org/). This departure is largely inspired by Stuart Ellis's blog post, [Modern Good Practices for Python Development](https://www.stuartellis.name/articles/python-modern-practices/#use-a-project-tool). To summarize, `uv` is faster, closer to Python standards, and more space-efficient. I recommend you to give it a try.
+
+```python
+# import the necessary libraries here
+px.launch_app()
+
+@cl.on_chat_start
+async def factory():
+    Settings.callback_manager = CallbackManager([
+      # Phoenix can display in real time the traces automatically collected from your LlamaIndex application.
+      # One-liner activation is possible, but I prefer to do it manually, so that I can put all callback handlers in one place.
+      OpenInferenceTraceCallbackHandler(),
+      cl.LlamaIndexCallbackHandler(),
+    ])
+    Settings.llm = #...
+    cl.user_session.set("agent", # initialize it here...
+      OpenAIAgent.from_tools(
+        system_prompt="You are a keeper of a Call of Cthulhu game...",
+        tools=[...],
+    ))
+
+@cl.on_message
+async def main(message: cl.Message):
+    agent: AgentRunner = cl.user_session.get("agent") # ... and use it here.
+    response = await cl.make_async(agent.chat)(message.content)
+    response_message = cl.Message(content="")
+    response_message.content = response.response
+    await response_message.send()
+```
+
+The line `await cl.make_async(agent.chat)(message.content)` may look messy, but it's actually a recommendation from [the Chainlit doc](https://docs.chainlit.io/api-reference/make-async#make-async):
+
+> The make_async function takes a synchronous function (for instance a LangChain agent) and returns an asynchronous function that will run the original function in a separate thread. This is useful to run long running synchronous tasks without blocking the event loop.
+
+I once thought we could just use `agent.achat(...)`, which is the async flavor of the `agent.chat(...)` method native to LlamaIndex. However, it would cause `<ContextVar name='chainlit' at 0x...>` errors. It seems that it matters in which thread the async function is declared. (Please tell me if I got it wrong.)
+
 ### Picking a LLM and a function-calling paradigm
 
-Since I started building AI agents last year, **I've always been using [the ReAct paradigm][ra]**. It simulates function-calling capabilities with a purely semantic approach, allowing me to try out ideas with locally-served LLMs, which rarely support calling functions natively.
+Ever since I started building AI agents last year, **I've always been using [the ReAct paradigm][ra]**. It simulates function-calling capabilities with a purely semantic approach, allowing me to try out ideas with locally-served LLMs, which rarely support calling functions natively.
 
 This feature may be **better illustrated by comparison**. Taking [the LlamaIndex framework][li] as an instance, where interactions between an AI agent and its underlying LLM are carried out by AgentWorkers:
 - A `ReActAgentWorker` describes all the tools in the system prompt **in English**, eavesdrops to the LLM's "inner dialogue" about what tool it wants to use, executes it, and sends back to the LLM for user-facing responses. (See my previous post, [_Why RAG is big_][wr], where I explained ReAct in more details.)
@@ -211,8 +265,15 @@ if __name__ == "__main__":
 [li]: https://www.llamaindex.ai/
 [wr]: https://blog.myli.page/why-rag-is-big-aa60282693dc
 
+In [my implementation][rp], I've added support for both the OpenAI-like Ollama API and the genuine OpenAI API. If you would like to see how ReAct performs, revert [this commit][tc] and run the chatbot with the Ollama API.
+
+### Building the tools
+
+Here comes the fun part. We need to build the tools that the AI Keeper can use.
+
+Let's start with the easiest
+
 
 <img width="1098" alt="image" src="https://github.com/user-attachments/assets/097a580a-67fa-4069-bdd6-32cea138976d">
 
 _Photo by [Shane Scarbrough](https://unsplash.com/@darkelfdice?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash) on [Unsplash](https://unsplash.com/photos/text-vQVv4UIrYR4?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash)_
-
