@@ -210,3 +210,9 @@ if __name__ == "__main__":
 [ra]: https://arxiv.org/abs/2210.03629
 [li]: https://www.llamaindex.ai/
 [wr]: https://blog.myli.page/why-rag-is-big-aa60282693dc
+
+
+<img width="1098" alt="image" src="https://github.com/user-attachments/assets/097a580a-67fa-4069-bdd6-32cea138976d">
+
+_Photo by [Shane Scarbrough](https://unsplash.com/@darkelfdice?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash) on [Unsplash](https://unsplash.com/photos/text-vQVv4UIrYR4?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash)_
+
