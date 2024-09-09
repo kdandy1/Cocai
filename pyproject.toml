@@ -13,6 +13,7 @@ dependencies = [
     "llama-index-llms-ollama",
     "llama-index-llms-openai-like>=0.2.0",
     "llama-index-llms-openai>=0.2.0",
+    "llama-index-tools-tavily-research>=0.2.0",
     "llama-index>=0.5.1",
     "rich>=13.8.0",
     "ruff>=0.6.3",

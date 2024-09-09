@@ -445,6 +445,7 @@ dependencies = [
     { name = "llama-index-llms-ollama" },
     { name = "llama-index-llms-openai" },
     { name = "llama-index-llms-openai-like" },
+    { name = "llama-index-tools-tavily-research" },
     { name = "rich" },
     { name = "ruff" },
     { name = "tomlkit" },
@@ -461,6 +462,7 @@ requires-dist = [
     { name = "llama-index-llms-ollama" },
     { name = "llama-index-llms-openai", specifier = ">=0.2.0" },
     { name = "llama-index-llms-openai-like", specifier = ">=0.2.0" },
+    { name = "llama-index-tools-tavily-research", specifier = ">=0.2.0" },
     { name = "rich", specifier = ">=13.8.0" },
     { name = "ruff", specifier = ">=0.6.3" },
     { name = "tomlkit", specifier = ">=0.13.2" },
@@ -1204,6 +1206,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c8/76/e73dbf4377dd5992ef7d7e511c4483b7ce372a7abbf801e5e0766e66f604/llama_index_readers_llama_parse-0.2.0.tar.gz", hash = "sha256:c54e8a207d73efb9f011636a30a4c1076b43d77a34d2563d374dc67c0cddfc83", size = 2503 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a3/f3/8ab161ceab323f7d55f0d1288f2293c9530c6e992e8af354d1b5d6fa4731/llama_index_readers_llama_parse-0.2.0-py3-none-any.whl", hash = "sha256:c0cb103fac8cd0a6de62a1b71a56884bef99a2d55c3afcabb073f078e727494f", size = 2473 },
+]
+
+[[package]]
+name = "llama-index-tools-tavily-research"
+version = "0.2.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "llama-index-core" },
+    { name = "tavily-python" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/90/b0/5f5dbeef8d6856f5f4333d5f86596b1fc5c8a3dd05a1d1fcbca3de19603d/llama_index_tools_tavily_research-0.2.0.tar.gz", hash = "sha256:7b537cfb02cab34e67cf8ee370890c7b50fe55baa5e900e653622d275b74b960", size = 3093 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/94/a2/48805f84a0288a20e520295777e4d2c38dbb91531b9b6de036394a511cb3/llama_index_tools_tavily_research-0.2.0-py3-none-any.whl", hash = "sha256:af9cd72ae753ffd398e7fd41dc663fec2feab23d915250cda7eaba5260cef924", size = 3342 },
 ]
 
 [[package]]
@@ -2606,6 +2621,20 @@ name = "syncer"
 version = "2.0.3"
 source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/8d/dd/d4dd75843692690d81f0a4b929212a1614b25d4896aa7c72f4c3546c7e3d/syncer-2.0.3.tar.gz", hash = "sha256:4340eb54b54368724a78c5c0763824470201804fe9180129daf3635cb500550f", size = 11512 }
+
+[[package]]
+name = "tavily-python"
+version = "0.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+    { name = "requests" },
+    { name = "tiktoken" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/67/bd/be3bdd5daa430b273a20dd5538a2a69e69e2da4b4ebdaea0ef3aee2b9c6d/tavily_python-0.4.0.tar.gz", hash = "sha256:e4517041dd135f171858d7e65a7cae085597871bbdc1a13d27990acb536e55c3", size = 15963 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b3/04/13e657e010a1257c56a2e52a0032ce1abd993b75553ddf838b26d7abe75c/tavily_python-0.4.0-py3-none-any.whl", hash = "sha256:b3fd0d7102bb34f0dfb0fd24378e2029504a9836ffe7f07c013824105d9f6a5a", size = 13850 },
+]
 
 [[package]]
 name = "tenacity"

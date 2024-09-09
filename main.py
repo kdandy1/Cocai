@@ -13,6 +13,7 @@ from llama_index.core.memory import ChatMemoryBuffer
 from llama_index.core.storage.chat_store import SimpleChatStore
 from llama_index.core.tools import FunctionTool
 from llama_index.embeddings.ollama import OllamaEmbedding
+from llama_index.tools.tavily_research import TavilyToolSpec
 from phoenix.trace.llama_index import OpenInferenceTraceCallbackHandler
 
 # If Python’s builtin readline module is previously loaded, elaborate line editing and history features will be available.
@@ -145,8 +146,17 @@ def create_agent(
         # base_url="http://10.147.20.237:11434",
     )
     # ============= End of the code block for wiring on to models. =============
-
-    all_tools = [
+    if api_key := os.environ.get("TAVILY_API_KEY", None):
+        # Manage your API keys here: https://app.tavily.com/home
+        logger.info(
+            "Thanks for providing a Tavily API key. This AI agent will be able to use search the internet."
+        )
+        tavily_tool = TavilyToolSpec(
+            api_key=api_key,
+        ).to_tool_list()
+    else:
+        tavily_tool = []
+    all_tools = tavily_tool + [
         FunctionTool.from_defaults(
             ToolForSuggestingChoices().suggest_choices,
         ),
