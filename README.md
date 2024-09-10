@@ -68,7 +68,7 @@ just serve
 
 ## Introduction
 
-**Call of Cthulhu** (CoC) is a tabletop role-playing game based on the works of H.P. Lovecraft. It involves 3~8 players, but coordinating everyone's schedule can feel like trying to align the stars. That's where an AI Keeper comes in. It can run a game for you, anytime, anywhere.
+**Call of Cthulhu** (CoC) is a tabletop role-playing game based on the works of H.P. Lovecraft. It involves 3~8 players, but coordinating everyone's schedule can feel like trying to align the stars. What if you're all alone and suddenly start to crave for a game? That's where an AI Keeper comes in. It can run a game for you, anytime, anywhere.
 
 In this post, we'll build a chatbot that acts as the game master ("Keeper") in a single-player CoC game. It will narrate the story, play the NPCs, and roll the dices. This means:
 
@@ -240,26 +240,18 @@ This feature may be **better illustrated by comparison**. Taking [the LlamaIndex
 
 **ReAct has its own issues, though.** The natural-language approach can be error-prone. The three major problems I witnessed (and fixed for LlamaIndex) are [malformed JSON strings](https://github.com/run-llama/llama_index/pull/10323), [hallucinated tools](https://github.com/run-llama/llama_index/pull/12207), and [failure to adhere to "inner voice" formats](https://github.com/run-llama/llama_index/pull/12300). Although we can ask the LLM to correct its own mistakes, it's better to prevent them from happening in the first place, just like native function-calling LLMs would.
 
-**The situation has improved.** This year, many more open-source LLMs have started supporting native function calls. The most prominent of them may be [Llama 3.1][l3], [released](https://ai.meta.com/blog/meta-llama-3-1/) on July 23, 2024. Two days later, Ollama published [an example](https://ollama.com/blog/tool-support) of how to have Llama 3.1 use tools when served via Ollama. This looks promising, so I decided to try it out in this project.
+**The situation has improved.** This year, many more open-source LLMs have started supporting native function calls. The most prominent of them may be [Llama 3.1][l3], [released](https://ai.meta.com/blog/meta-llama-3-1/) on July 23, 2024. Two days later, Ollama published [an example](https://ollama.com/blog/tool-support) of how to have Llama 3.1 use tools when served via Ollama. This looked promising, so I decided to try it out in this project.
 
 We can use the `OpenAIAgentWorker` to make use of Llama 3.1's tooling capabilities. The only caveat is that `OpenAIAgentWorker` expects an OpenAI LLM. If we continued to use the LLM class `llama_index.llms.ollama.Ollama`, `OpenAIAgentWorker` would complain "llm must be a OpenAI instance". Luckily, Ollama offers an OpenAI-compatible API, so we can simply use the LLM class `llama_index.llms.openai_like.OpenAILike` as a workaround. Here's a minimal reproducible example ([gist](https://gist.github.com/tslmy/3e71685d632f4ed5ba493af97e75c07d)):
 
 ```python
-import random
-
-from llama_index.agent.openai import OpenAIAgent
-from llama_index.core import Settings
-from llama_index.core.tools import FunctionTool
-from llama_index.llms.openai_like import OpenAILike
-from pydantic import Field
-
+# import the necessary packages here
 
 def roll_a_dice(
     n: int = Field(description="number of faces of the dice to roll", gt=0, le=100),
 ) -> int:
     """Roll an n-faced dice and return the result."""
     return random.randint(1, n)
-
 
 if __name__ == "__main__":
     Settings.llm = OpenAILike(
@@ -304,7 +296,7 @@ else:
     ))
 ```
 
-In the snippet above, we are reading the API key from the environment variable `TAVILY_API_KEY`. "Does it mean I have to supply that env var every time I run the script, or do I have to add it into my `.profile` script?", you may ask. No, you don't have to! Here's a lesser-known side effect of using Chainlit: It automatically reads the environment variables from a `.env` file in the project root, thanks to [its usage][iu] of the [`python-dotenv`][pde] package. The more you know.
+**Secret management.** In the snippet above, we are reading the API key from the environment variable `TAVILY_API_KEY`. "Does it mean I have to supply that env var every time I run the script, or do I have to add it into my `.profile` script?", you may ask. No, you don't have to! Here's a lesser-known side effect of using Chainlit: It automatically reads the environment variables from a `.env` file in the project root, thanks to [its usage][iu] of the [`python-dotenv`][pde] package. The more you know.
 
 [lh]: https://llamahub.ai/
 [iu]: https://github.com/Chainlit/chainlit/blob/d4eeeb8f8055e1d5f90607f8cfcbf28b89618952/backend/chainlit/__init__.py#L6
