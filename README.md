@@ -109,7 +109,16 @@ Now, let's examine each component in detail and see how we want to implement the
 
 ## Design
 
-**Character building** is a process that involves quite some math, which isn't LLM's strong suit. Fortunately, there is a Python package for that: [Cochar](https://www.cochar.pl/) by Adam Walkiewicz. We can simply register it as a tool for our AI Keeper to use.
+**Character building** is a process that involves quite some math, which isn't LLM's strong suit. We can circumvent this by delegating the task to an existing tool, which the internet has plenty of. The following web-based character builders allow downloading character sheets as JSON files, which can be easily parsed by our AI Keeper:
+* My favorite is from [the Dhole's House][dh], which also features a [rich library][rl] of pre-built Investigator ready for adoption.
+* If you play CoC in Chinese, [Cthulhu Club][cc] offers a decent alternative.
+
+What if the player doesn't want to digress to a browser at all? Let's do it in pure Python! **The package [Cochar][cr] by Adam Walkiewicz does just that**. We can simply register it as a tool for our AI Keeper to use. Plus, since this package brings its own class representing character sheets, it saved us the trouble of defining the data schema for imported JSON files.
+
+[dh]: https://www.dholeshouse.org/Characters/CoCv7Investigators/CreateNew
+[rl]: https://www.dholeshouse.org/CharacterLibrary/CoC7edInvestigators
+[cc]: https://www.cthulhuclub.com/charSheetGenerator/
+[cr]: https://www.cochar.pl/
 
 Another math-heavy part is **dice rolling**. Researchers [have shown][sp] that LLMs tend to be biased when generating random numbers. Let's delegate this task to a tool written in traditional programming code.
 For dice outcomes, the CoC rulebook has [an exact mapping][em] for numerical values to _degrees of success_ (success, fail, fumble, etc.). Things like this should also be handled by traditional code and packaged into a tool.
@@ -166,7 +175,7 @@ The end goal for our chatbot is to hold a conversation like the following:
 
 <img width="200" alt="image" src="https://github.com/user-attachments/assets/80642eb4-95f2-46e2-b918-7832a462ce83">
 
-In the dialogue above, I've asked our AI Keeper to generate a character for me. Failing to satisfy the input requirements of the character creation tool, Cocai corrected itself in the next attempt and successfully got a 23-year-old Mr. Don Joe from the tool:
+**What just happened?** In the dialogue above, I've asked our AI Keeper to generate a character for me. Failing to satisfy the input requirements of the character creation tool, Cocai corrected itself in the next attempt and successfully got a 23-year-old Mr. Don Joe from the tool:
 
 <img width="500" alt="image" src="https://github.com/user-attachments/assets/52ea545d-4f7d-4b2d-b26a-2765678cd8c1">
 
@@ -302,10 +311,74 @@ else:
 [iu]: https://github.com/Chainlit/chainlit/blob/d4eeeb8f8055e1d5f90607f8cfcbf28b89618952/backend/chainlit/__init__.py#L6
 [pde]: https://pypi.org/project/python-dotenv/
 
-**What if our chosen library lacks an off-the-shelf integration with LlamaIndex?** That's where we have to specify the tool's metadata ourselves. The nominal example in our project is Cochar,
+**What if our chosen library lacks an off-the-shelf integration with LlamaIndex?** That's where we have to specify the tool's metadata ourselves. The nominal example in our project is [Cochar][cr], our character creation tool of choice. To declare it as a tool for LlamaIndex Agents, just wrap it with `FunctionTool.from_defaults`:
+
+```python
+tool_for_creating_character = FunctionTool.from_defaults(
+    cochar.create_character,
+)
+```
+
+As aforementioned, Cochar has its own class of representing character sheets -- `cochar.create_character` returns an object of the class `Character`. However, LLMs only see **string** outputs from tools, so `__str__` methods are always implicitly called. Unfortunately, the `__str__` method on `Character` prints data in space-delimited columns, which tends to confuse LLMs. We'd be better off using JSON.
+
+```python
+@wraps(cochar.create_character)
+def make_character(*args, **kwargs) -> dict:
+    character: Character = cochar.create_character(*args, **kwargs)
+    return character.get_json_format()
+
+tool_for_creating_character = FunctionTool.from_defaults(
+    make_character,
+)
+```
+
+Here, `@wraps` is a decorator from the `functools` module. It copies [a handful of attributes][ha] of the original function to the wrapper function, including the docstring.(`cochar.create_character` has a huge docstring, whereas `make_character` has none.) In LlamaIndex, `FunctionTool.from_defaults` uses the docstring to describe the tool to the LLM, so we want to keep it intact.
+
+[ha]: https://stackoverflow.com/a/55102697/27163563
+
+We are not done yet. As part of the `Character` class, Cochar also brings in a special class, `SkillsDict`. This customized dictionary type has an overridden `__setitem__` method, which Pydantic -- the library that LlamaIndex uses to infer input schema from function signatures -- doesn't like:
+
+> pydantic.errors.PydanticSchemaGenerationError: Unable to generate pydantic-core schema for <class 'cochar.skill.SkillsDict'>. Set `arbitrary_types_allowed=True` in the model_config to ignore this error or implement `__get_pydantic_core_schema__` on your type to fully support it.
+
+"Wait, where did you see `__setitem__` in the complaint?", I hear you ask. This brings us to a detour of some Python niches. Notice that `SkillDict` is declared as a subclass of the built-in type, `UserDict`.
+
+```python
+class SkillsDict(UserDict):
+```
+
+If you monkey-patched this `UserDict` to `dict`, Pydantic would stop complaining. However, `SkillsDict` needs to override `__setitem__`, so it can't subclass `dict` and have to implement the Abstract Base Class (ABC) `MutableMapping`. The class `UserDict` serves as a default implementation for just that. To paraphrase this [Stack Overflow answer][soa]:
+* You subclass `dict` if you want to _extend_ (i.e., add more methods to) `dict`, and
+* you subclass `UserDict` if you want to _override_ (i.e., rewrite existing methods on) `dict`.
+
+That's enough detour of Python niches; back to the problem at hand. `arbitrary_types_allowed` looks risky to me, and I don't have control over the `SkillsDict` class. Let's just write a tool schema by hand:
+
+```python
+class CreateCharacterRequest(BaseModel):
+    year: int = Field(
+        1925,
+        ge=1890,
+        description="Year of the game, must be an integer starting from 1890.",
+    )
+    country: Literal["US", "PL", "ES"] = Field(
+        ...,
+        description="Country of the character's origin. Available options: 'US', 'PL', 'ES'.",
+    )
+    ...
+
+tool_for_creating_character = FunctionTool.from_defaults(
+    make_character,
+    fn_schema=CreateCharacterRequest,
+    description="Create a character.",
+)
+```
+
+Writing a Pydantic model for the input schema also gives me a chance to reword some parameter descriptions, which helps the LLM understand the tool better. I can then get rid of the original docstring by overriding the `description=` in `FunctionTool.from_defaults` with a succinct one-liner. At this point, I can actually remove the `@wraps` decorator from our `make_character` function.
 
 
+
+
+
+[soa]: https://stackoverflow.com/a/7148602/27163563
 <img width="1098" alt="image" src="https://github.com/user-attachments/assets/097a580a-67fa-4069-bdd6-32cea138976d">
 
 _Photo by [Shane Scarbrough](https://unsplash.com/@darkelfdice?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash) on [Unsplash](https://unsplash.com/photos/text-vQVv4UIrYR4?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash)_
-
