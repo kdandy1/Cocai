@@ -203,7 +203,67 @@ Writing a Pydantic model for the input schema also gives me a chance to reword s
 
 ## Defining our own Python function
 
-==TODO==
+There are always going to be times when you have to build a tool from ground up. Rolling skill checks is a good example. The degree of success (success, failure, fumble, etc.) is determined by the rolled value, the skill value, and the difficulty of the situation. The formula can be encoded as huge chain of `if-else` statements:
+
+```python
+def __map_dice_outcome_to_degree_of_success(
+    difficulty: Difficulty, result: int, skill_value: int
+) -> DegreesOfSuccess:
+    if result == 100:
+        return DegreesOfSuccess.FUMBLE
+    if result == 1:
+        return DegreesOfSuccess.CRITICAL_SUCCESS
+    result_ignoring_difficulty = DegreesOfSuccess.FAIL
+    if result <= skill_value // 5:
+        result_ignoring_difficulty = DegreesOfSuccess.EXTREME_SUCCESS
+    elif result <= skill_value // 2:
+        result_ignoring_difficulty = DegreesOfSuccess.HARD_SUCCESS
+    elif result <= skill_value:
+        result_ignoring_difficulty = DegreesOfSuccess.SUCCESS
+    # Now, we consider the difficulty.
+    if difficulty == Difficulty.REGULAR:
+        return result_ignoring_difficulty
+    elif difficulty == Difficulty.DIFFICULT:
+        if result_ignoring_difficulty >= DegreesOfSuccess.HARD_SUCCESS:
+            return result_ignoring_difficulty
+        # else, fall through to return a FAIL.
+    elif difficulty == Difficulty.EXTREME:
+        if result_ignoring_difficulty == DegreesOfSuccess.EXTREME_SUCCESS:
+            return result_ignoring_difficulty
+        # else, fall through to return a FAIL.
+    return DegreesOfSuccess.FAIL
+```
+
+(Enum types `Difficulty` and `DegreesOfSuccess` are omitted. Remember to declare them as `IntEnum`, so that they can be compared with ">" and "<".)
+
+The skill check procedure itself can be implemented in three lines:
+```python
+def roll_a_skill(skill_value: int, difficulty: Difficulty = Difficulty.REGULAR) -> str:
+    dice_outcome = random.randint(1, 100)
+    return __map_dice_outcome_to_degree_of_success(difficulty, dice_outcome, skill_value)
+```
+
+To make it a tool, document it well:
+
+```python
+def roll_a_skill(
+    skill_value: int = Field(description="skill value", ge=0, le=100),
+    difficulty: Difficulty = Field(description="difficulty level", default=Difficulty.REGULAR),
+) -> str:
+    """Roll a skill check and check the result."""
+    dice_outcome = random.randint(1, 100)
+    result = __map_dice_outcome_to_degree_of_success(difficulty, dice_outcome, skill_value)
+    return f"You rolled a {dice_outcome}. That's a {result.name.lower().replace('_', ' ')}!"
+```
+
+Then we can simply wrap this function with `FunctionTool.from_defaults`. Notice that:
+
+**We didn't create a standalone schema class for our tool.** Instead, we annotated each parameter with a [Pydantic `Field`][pf]. It threw me off a bit when I initially saw the practice of assigning `Field` objects to parameters that are clearly type-hinted otherwise, but it's a neat trick to keep the schema definition close to the function signature. This is a more concise way to define the schema, especially when the schema is simple.
+
+**We returned a natural-language string.** The LLM is a _language_ model, after all; it understands English better than it understands cold, hard JSON. When the output is not structured, always prefer natural language to code. How do you know? Here's a rule of thumb: Tabular data or nested objects are **structured** data, whereas plain descriptions of facts can be considered **unstructured**, especially if they are short and/or has a natural order (like time of occurrence or logical chain). Our dice-rolling result is both short and logically ordered (we see the numerical outcomes first and then identify degrees of success, not the other way around), so it's unstructured.
+
+[pf]: https://docs.pydantic.dev/latest/concepts/fields/
+
 
 ## Creating a tool powered by LLM, for LLM
 

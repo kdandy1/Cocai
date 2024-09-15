@@ -205,7 +205,9 @@ def __roll_a_skill(
     return degree_of_success
 
 
-def __map_dice_outcome_to_degree_of_success(difficulty, result, skill_value):
+def __map_dice_outcome_to_degree_of_success(
+    difficulty: Difficulty, result: int, skill_value: int
+) -> DegreesOfSuccess:
     if result == 100:
         return DegreesOfSuccess.FUMBLE
     if result == 1:
@@ -240,12 +242,8 @@ def roll_a_skill(
     """
     Roll a skill check and check the result.
     """
-    roll_result = __roll_a_skill(skill_value, difficulty)
-    return {
-        DegreesOfSuccess.FUMBLE: "fumble",
-        DegreesOfSuccess.FAIL: "fail",
-        DegreesOfSuccess.SUCCESS: "success",
-        DegreesOfSuccess.HARD_SUCCESS: "hard success",
-        DegreesOfSuccess.EXTREME_SUCCESS: "extreme success",
-        DegreesOfSuccess.CRITICAL_SUCCESS: "critical success",
-    }[roll_result]
+    dice_outcome = random.randint(1, 100)
+    result = __map_dice_outcome_to_degree_of_success(
+        difficulty, dice_outcome, skill_value
+    )
+    return f"You rolled a {dice_outcome}. That's a {result.name.lower().replace('_', ' ')}!"
