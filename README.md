@@ -95,6 +95,13 @@ else:
 [iu]: https://github.com/Chainlit/chainlit/blob/d4eeeb8f8055e1d5f90607f8cfcbf28b89618952/backend/chainlit/__init__.py#L6
 [pde]: https://pypi.org/project/python-dotenv/
 
+**A peek under the hood.** In [the first post of this series][1st], I demonstrated that our AI Keeper could consult the internet when both of us were unsure about a particular rule. Behind the scene, this was what happened:
+
+[1st]: https://blog.myli.page/lets-write-an-ai-keeper-for-call-of-cthulhu-part-i-design-demo-703ae46ece1b
+
+<img width="733" alt="image" src="https://github.com/user-attachments/assets/56120b22-2dc2-4c41-9b44-7d0b14ade8e3">
+
+
 ## Incorporating an arbitrary PyPI library
 
 **What if our chosen library lacks an off-the-shelf integration with LlamaIndex?** That's where we have to specify the tool's metadata ourselves. The nominal example in our project is [Cochar][cr], our character creation tool of choice. At the minimum, Cochar only requires a year and a country to generate a full character profile:
