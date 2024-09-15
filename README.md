@@ -190,6 +190,8 @@ tool_for_creating_character = FunctionTool.from_defaults(
 
 Writing a Pydantic model for the input schema also gives me a chance to reword some parameter descriptions, which helps the LLM understand the tool better. I can then get rid of the original docstring by overriding the `description=` in `FunctionTool.from_defaults` with a succinct one-liner. This also means our `make_character` function no longer needs its `@wraps` decorator. At this point, our tool looks like this to our agent:
 
+<img width="910" alt="image" src="https://github.com/user-attachments/assets/1e131212-478a-45c3-803f-b057e4a2cb53">
+
 [soa]: https://stackoverflow.com/a/7148602/27163563
 
 ## Defining our own Python function
