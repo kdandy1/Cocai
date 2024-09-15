@@ -97,15 +97,44 @@ else:
 
 ## Incorporating an arbitrary PyPI library
 
-**What if our chosen library lacks an off-the-shelf integration with LlamaIndex?** That's where we have to specify the tool's metadata ourselves. The nominal example in our project is [Cochar][cr], our character creation tool of choice. To declare it as a tool for LlamaIndex Agents, just wrap it with `FunctionTool.from_defaults`:
+**What if our chosen library lacks an off-the-shelf integration with LlamaIndex?** That's where we have to specify the tool's metadata ourselves. The nominal example in our project is [Cochar][cr], our character creation tool of choice. At the minimum, Cochar only requires a year and a country to generate a full character profile:
+
+[cr]: https://www.cochar.pl/
 
 ```python
-tool_for_creating_character = FunctionTool.from_defaults(
-    cochar.create_character,
-)
+>>> print(cochar.create_character(1995, "US"))
+Character
+Name: Breland Justice
+Sex: M, Age: 38, Country: US
+Occupation: Tribe member
+STR: 85 CON: 18 SIZ: 90
+DEX: 81 APP: 15 EDU: 57
+INT: 90 POW: 45 Luck: 35
+Damage bonus: +1K6
+Build: 2
+Dodge: 40
+Move rate: 7
+Skills:
+| Climb: 86 || Throw: 78 || Natural world: 15 |
+| Listen: 22 || Occult: 15 || Spot hidden: 20 |
+| Fighting (sword): 75 || Survival (jungle): 88 || Archeology: 67 |
+| History: 6 || Locksmith: 49 || Mechanical repair: 42 |
+| Pilot: 12 || Fast talk: 17 || Persuade: 16 |
+| Fighting (whip): 8 || Language (latin): 2 || Credit rating: 7 |
 ```
 
-As aforementioned, Cochar has its own class of representing character sheets -- `cochar.create_character` returns an object of the class `Character`. However, LLMs only see **string** outputs from tools, so `__str__` methods are always implicitly called. Unfortunately, the `__str__` method on `Character` prints data in space-delimited columns, which tends to confuse LLMs. We'd be better off using JSON.
+**The output format needs an overhaul, though.** For CLI programs, these ASCII tables are fine, but they will look horrible in a chat bubble. I want a natural-language description of generated characters, so the LLM will run over the raw output. However, [LLMs are sensitive to][tllm] table formats (choice of delimiters, etc.) and partition marks (where a table begins and ends), both of which are improvised quite liberally in the above design. Let's avoid risking typography biasing our AI: We'd be better off standardizing to a data serialization format that your LLM likely **have seen a lot, across numerous topics**.
+
+In terms of popularity, what can possibly be a better option than JSON?
+
+[tllm]: https://www.microsoft.com/en-us/research/publication/table-meets-llm-can-large-language-models-understand-structured-table-data-a-benchmark-and-empirical-study/
+
+```python
+>>> print(cochar.create_character(1995, "US").get_json_format())
+{'year': 1995, 'country': 'US', 'first_name': 'Japheth', 'last_name': 'Rowles', 'age': 46, 'sex': 'M', 'occupation': 'chauffeur', 'strength': 28, 'condition': 68, 'size': 65, 'dexterity': 61, 'appearance': 23, 'education': 57, 'intelligence': 76, 'power': 31, 'move_rate': 6, 'luck': 26, 'damage_bonus': '0', 'build': 0, 'skills': {'drive auto': 38, 'mechanical repair': 75, 'navigate': 83, 'psychology': 79, 'persuade': 18, 'art/craft': 30, 'acting': 49, 'jump': 79, 'library use': 21, 'pilot': 18, 'psychoanalysis': 2, 'stealth': 22, 'track': 12, 'credit rating': 25}, 'dodge': 30, 'sanity_points': 31, 'magic_points': 6, 'hit_points': 13}
+```
+
+We can wrap this into a small function called `make_character`. To declare it as a tool for LlamaIndex Agents, just wrap it with `FunctionTool.from_defaults`:
 
 ```python
 @wraps(cochar.create_character)
@@ -118,8 +147,9 @@ tool_for_creating_character = FunctionTool.from_defaults(
 )
 ```
 
-Here, `@wraps` is a decorator from the `functools` module. It copies [a handful of attributes][ha] of the original function to the wrapper function, including the docstring.(`cochar.create_character` has a huge docstring, whereas `make_character` has none.) In LlamaIndex, `FunctionTool.from_defaults` uses the docstring to describe the tool to the LLM, so we want to keep it intact.
+`FunctionTool.from_defaults` (and its [LangChain equivalent, `@tool`][td]) uses the docstring to describe the tool to the LLM, so we want to keep the docstring intact. (If it's not obvious -- `cochar.create_character` has a huge docstring, whereas `make_character` has none.) That's where `@wraps` comes to play. It copies [a handful of attributes][ha] of the original function to the wrapper function, including the docstring.
 
+[td]: https://python.langchain.com/v0.1/docs/modules/tools/custom_tools/#tool-decorator
 [ha]: https://stackoverflow.com/a/55102697/27163563
 
 We are not done yet. As part of the `Character` class, Cochar also brings in a special class, `SkillsDict`. This customized dictionary type has an overridden `__setitem__` method, which Pydantic -- the library that LlamaIndex uses to infer input schema from function signatures -- doesn't like:
@@ -158,7 +188,7 @@ tool_for_creating_character = FunctionTool.from_defaults(
 )
 ```
 
-Writing a Pydantic model for the input schema also gives me a chance to reword some parameter descriptions, which helps the LLM understand the tool better. I can then get rid of the original docstring by overriding the `description=` in `FunctionTool.from_defaults` with a succinct one-liner. At this point, I can actually remove the `@wraps` decorator from our `make_character` function.
+Writing a Pydantic model for the input schema also gives me a chance to reword some parameter descriptions, which helps the LLM understand the tool better. I can then get rid of the original docstring by overriding the `description=` in `FunctionTool.from_defaults` with a succinct one-liner. This also means our `make_character` function no longer needs its `@wraps` decorator. At this point, our tool looks like this to our agent:
 
 [soa]: https://stackoverflow.com/a/7148602/27163563
 
