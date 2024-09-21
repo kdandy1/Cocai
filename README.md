@@ -267,7 +267,75 @@ Then we can simply wrap this function with `FunctionTool.from_defaults`. Notice 
 
 ## Creating a tool powered by LLM, for LLM
 
-==TODO==
+What can be more natural-language than a tool that relies on imagination?
+
+In tabletop role-playing games, players often seek advice from the host. Inquiries may include:
+
+* What are some skills to use / spells to cast in this situation?
+* If I do this / say this, what would happen?
+* What would be the best & the worst outcomes if I roll dices for this skill?
+
+Before LLMs were popular, I couldn't think of any better way to programmatically answer these questions than to encode every possible variable into a struct describing current situation and then look up from a massive database. But now, we can exploit LLM's latent knowledge about how stories usually unfold. It's literally a game changer.
+
+Let's make a tool that handles questions like "what can I do in this situation". I want the AI Keeper to be able to suggest a few options and describe the potential outcomes of each choice. For example, if my Investigator has discovered a mysterious, ancient artifact in a hidden chamber when I asked this question, I want the chatbot to say something like this:
+
+> 1. **Archaeology**
+>    - **Critical Success:** You identify the artifact as a powerful relic from a lost civilization and uncover its true purpose. This knowledge provides a significant advantage in future encounters, as the artifact can be used to counter certain supernatural threats.
+>    - **Ordinary Success:** You recognize the artifact as something ancient and possibly valuable, though its exact origin remains unknown. The group is cautious but unsure of its full potential.
+>    - **Failure:** You misinterpret the symbols, believing the artifact to be a harmless trinket. This leads to a false sense of security, potentially causing problems when the artifact's true nature is revealed.
+>    - **Fumble:** Your examination triggers a hidden mechanism in the artifact, unleashing a dangerous curse or summoning a malevolent entity.
+>
+> 2. **Occult**
+>    - **Extreme Success:** You decipher the symbols and realizes they are part of a ritual. You also understand how to safely control or use the artifact to protect the group from supernatural forces.
+>    - **Hard Success:** You recognize the artifact as tied to dark rituals and understand the risks involved. The group decides to handle it with extreme caution.
+>    - **Failure:** You sense something strange about the artifact but cannot determine its purpose. This uncertainty causes unease among the group.
+>    - **Fumble:** You mistake the artifact for a harmless relic, and attempting to use it inadvertently invites dark forces or causes psychological harm.
+
+Unless you are using a model _fine-tuned_ on Cthulhu Mythos, your AI keeper probably won't answer things very [Lovecraftian-ly][lct]. It may ruin the mood by suggesting escape routes like "call 911" and "leave the danger to the professionals". To avoid that, we have to [_prime_ it (in the psychological sense)][pit] on some good examples. Each example should start with a description of situation, followed by a nested list of suggested skills and their possible outcomes, similar to the one above. Immediately after these examples is the template that the tool should fill in. Using the text completion API, the prompt should look like this:
+
+> Situation: The Investigator has discovered a mysterious, ancient artifact in a hidden chamber.
+> Suggested skills:
+> \[everything above]
+>
+> Situation: The Investigator is trapped in a dark cave with no apparent way out.
+> Suggested skills:
+> \[some other suggestions]
+>
+> Situation: {situation}
+> Suggested skills:
+
+Here, `{situation}` is a placeholder for the AI Keeper to fill in. The prompt ends with "Suggested skills:", which signals the LLM to mimic the examples above. Now, if you use this prompt as-is, your chatbot may overfit to the examples, only suggesting skills seen in them. To avoid so, we can prepend a list of all possible skills in CoC to the prompt. This is like giving a crash course to the LLM before putting it to work. Putting it all together, my spin of the prompt ended up like [this](https://github.com/StarsRail/Cocai/blob/main/prompts/choices_prompt.md).
+
+At this point, our prompt is going to be a couple of thousands of words long. That's awkward to view or edit as a string literal in Python. We can store it in a separate file and read it when constructing the tool.
+
+```python
+class ToolForSuggestingChoices:
+    def __init__(self, path_to_prompts_file: Path = Path("prompts/choices_prompt.md")):
+        self.__prompt = path_to_prompts_file.read_text()
+
+    def suggest_choices(
+        self, situation: str = Field(description="a brief description of the situation")
+    ) -> str:
+        """
+        If the user wants to know what skills their character can use in a particular situation (and what the possible consequences might be), you can use this tool.
+        Note: This tool can only be used when the game is in progress. This is not a tool for meta-tasks like character creation.
+        """
+        prompt = self.__prompt.format(situation=situation)
+        return Settings.llm.complete(prompt)
+
+FunctionTool.from_defaults(
+    ToolForSuggestingChoices().suggest_choices,
+)
+```
+
+Many models come in two flavors: "instruct" that is fine-tuned for chatting and "text" that is fine-tuned for text completion. In some tricky situations, the text completion endpoint will be disabled on chat models (and vice versa), so you would need both models to drive the AI Keeper. This isn't a concern if you're using some remote API, but if you are serving LLMs locally, it might be too costly to load both variants into memory. Since the chat model is indispensable, we need to figure out a way to use a chat model for text completion. This requires us re-writing our prompt into a fake dialogue, where the system prompt will be the introduction of all possible skills, and then something along the lines of:
+
+> You are a Keeper of a Call of Cthulhu game. The user is your player. The player will describe a situation, and you will suggest some skills they can use in that situation. For each skill, describe the possible outcomes of using that skill. The player will then decide which skill to use.
+
+Then, for each example, you wrap the description of the situation as a "User Message" and the suggestions as an "AI Message". Repeat this foe all examples in your original prompt. Your tool should take the current situation as string and send it to the chat interface, along with the fake dialog as chat history. Basically, we are "brainwashing" the same LLM to think it has a second persona that is solely responsible for suggesting skills. This way, we don't need to load another model into RAM, potentially halving the memory usage.
+
+[lct]: https://en.wikipedia.org/wiki/Lovecraftian_horror
+[pit]: https://www.psychologytoday.com/us/basics/priming
 
 ## Conclusion
 
