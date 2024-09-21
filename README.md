@@ -339,8 +339,16 @@ Then, for each example, you wrap the description of the situation as a "User Mes
 
 ## Conclusion
 
-==TODO==
+In this post, we walked through four common means of building agentic tools for AI chatbots. To recap, they are:
 
+* importing a pre-packaged tool specific to your framework of choice (LlamaIndex in my case),
+* wrapping an arbitrary Python library into a tool,
+* declaring any Python function as a tool, and, as a special case of this,
+* creating a tool powered by LLM's text completion capabilities.
+
+Particularly, we emphasized on what kind of functions should be implemented with a LLM and what should stick with the traditional programming paradigm. To summarize, tasks that have well-defined procedure to follow or require strict adherence to certain rules, such as mathematical computations, should stay in the coding realm, whereas those that rely on creativity or are awkward to script can be gracefully -- albeit less reliably -- delegated to LLMs. If you are just starting out with AI agents, tools described in this post can serve as great examples.
+
+Up till now, we have been focusing on the dialogue capabilities of our chatbot. What's next? In the third installation of the series, let's switch topic and talk about the cosmetics. Can we show some dice-rolling animation when we invoke the respective tool? Can we ask Stable Diffusion to paint an illustration to accompany the story? Those questions will be explored in our next post. Stay tuned!
 
 <img width="1098" alt="image" src="https://github.com/user-attachments/assets/097a580a-67fa-4069-bdd6-32cea138976d">
 
