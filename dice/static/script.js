@@ -76,6 +76,9 @@ diceOptions.forEach((option, index) => {
     case "d12":
       dice = new DiceD12({ backColor: "#ffffff" });
       break;
+    case "d20":
+      dice = new DiceD20({ backColor: "#ffffff" });
+      break;
     default:
       break;
   }

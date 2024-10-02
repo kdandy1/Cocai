@@ -24,6 +24,7 @@ async def roll_dice(
     d8: Annotated[List[int], Query()] = [],
     d10: Annotated[List[int], Query()] = [],
     d12: Annotated[List[int], Query()] = [],
+    d20: Annotated[List[int], Query()] = [],
 ):
     # Prepare a list of dice types and their values
     dice_data = [
@@ -35,6 +36,7 @@ async def roll_dice(
                 zip(repeat("d8"), d8),
                 zip(repeat("d10"), d10),
                 zip(repeat("d12"), d12),
+                zip(repeat("d20"), d20),
             ]
         )
     ]
