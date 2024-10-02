@@ -433,7 +433,8 @@ class DiceObject {
         if (!DiceManager.world) throw new Error('You must call DiceManager.setWorld(world) first.');
         this.object = new THREE.Mesh(this.getGeometry(), this.getMaterials());
 
-        this.object.reveiceShadow = true;
+        // A typo is fixed here.
+        this.object.receiveShadow = true;
         this.object.castShadow = true;
         this.object.diceObject = this;
         this.object.body = new CANNON.Body({
