@@ -1,6 +1,7 @@
 from itertools import chain, repeat
 from typing import Annotated, List
 
+from chainlit.utils import mount_chainlit
 from fastapi import FastAPI, Query
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -10,10 +11,10 @@ app = FastAPI()
 
 
 # Mount the 'static' directory to serve static files
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="dice/static"), name="static")
 
 # Template for rendering the dice in the HTML
-dice_template = open("index.jinja").read()
+dice_template = open("dice/index.jinja").read()
 
 
 @app.get("/roll_dice", response_class=HTMLResponse)
@@ -43,3 +44,8 @@ async def roll_dice(
     # Render the template with the dice data passed as context
     template = Template(dice_template)
     return template.render(dice_options=dice_data)
+
+
+mount_chainlit(app=app, target="main.py", path="/chat")
+# To see how dice rolling works, uncomment the following line and comment out the line above.
+# mount_chainlit(app=app, target="dice/demo.py", path="/demo/dice")

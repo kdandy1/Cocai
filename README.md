@@ -63,3 +63,5 @@ You can start the chatbot by running:
 ```shell
 just serve
 ```
+
+Then, navigate to `http://localhost:8000/chat/` in your browser.

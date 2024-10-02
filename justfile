@@ -1,5 +1,5 @@
 serve:
-    uv run python -m chainlit run main.py -w
+    uv run uvicorn server:app
 run:
     uv run main.py
 format:
