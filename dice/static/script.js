@@ -125,7 +125,7 @@ diceOptions.forEach((option, index) => {
     diceArray.push({ dice: dice, value: value });
   }
 });
-// DiceManager.prepareValues(diceArray);
+DiceManager.prepareValues(diceArray);
 
 // https://threejs.org/docs/#api/en/cameras/PerspectiveCamera
 const camera = new THREE.PerspectiveCamera(
