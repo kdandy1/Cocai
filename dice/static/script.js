@@ -148,14 +148,6 @@ cameraControls.setLookAt(
   false
 )
 
-const skyBoxGeometry = new THREE.BoxGeometry(10000, 10000, 10000)
-const skyBoxMaterial = new THREE.MeshPhongMaterial({
-  color: 0x444444,
-  side: THREE.BackSide
-})
-const skyBox = new THREE.Mesh(skyBoxGeometry, skyBoxMaterial)
-scene.add(skyBox)
-
 /** We want to render a plane as the "ground" of our scene, where dices will bounce off and settle still.
    Note how this is different from the `floorBody` that we added to the Cannon.js world.
    The `ground` mesh is a visual representation of the ground, while the `floorBody` is a physical representation of the ground. */
@@ -210,34 +202,6 @@ function createGround () {
 }
 const ground = createGround()
 const boundingSphere = ground.geometry.boundingSphere
-
-// ====================================================== Lights ======================================================
-// --------------------------------- Ambient lights make un-illuminated areas visible ---------------------------------
-const ambient = new THREE.AmbientLight(0xffffff, 0.3)
-scene.add(ambient)
-// --------------------------------------- Directional lights simulate sunlight ---------------------------------------
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1)
-// We want it to be positioned in the sky...
-directionalLight.position.set(-1000, 2000, 2000)
-// ... and point at the ground.
-directionalLight.target = ground
-// - - - - - - - - - - - - - - - - - - - - - We want the light to cast shadows - - - - - - - - - - - - - - - - - - - -
-directionalLight.castShadow = true
-/* Shadows casted by a directional light is determined with a camera. We want to ensure that it encompasses the
-   entire ground, but not any bigger (to save computational resources).
-   We do so by calculating the bounding sphere of the ground and then encompassing the camera's frustum around it.
-   The use of a bounding sphere is intuitive, because we are dealing with the problem of a beam (the light) and a
-   volume (the ground and all dices on it). */
-directionalLight.shadow.camera.top = boundingSphere.radius
-directionalLight.shadow.camera.bottom = -boundingSphere.radius
-directionalLight.shadow.camera.left = -boundingSphere.radius
-directionalLight.shadow.camera.right = boundingSphere.radius
-const distance = directionalLight.position.distanceTo(ground.position)
-directionalLight.shadow.camera.near = distance - boundingSphere.radius
-directionalLight.shadow.camera.far = distance + boundingSphere.radius
-directionalLight.shadow.camera.lookAt(ground.position)
-scene.add(directionalLight)
-// =====================================================^ Lights ^=====================================================
 
 function animate () {
   world.step(1.0 / 60.0)
