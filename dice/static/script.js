@@ -57,6 +57,39 @@ world.addBody(floorBody)
 
 DiceManager.setWorld(world)
 
+const textureLoader = new THREE.TextureLoader()
+function applyCommonSettingsToTextureMap (map) {
+  map.wrapS = THREE.RepeatWrapping
+  map.wrapT = THREE.RepeatWrapping
+  map.anisotropy = 4
+  map.repeat.set(1, 1)
+  map.colorSpace = THREE.SRGBColorSpace
+}
+
+/* https://tympanus.net/codrops/2021/10/27/creating-the-effect-of-transparent-glass-and-plastic-in-three-js/ */
+const materialOptions = {
+  transmission: 1,
+  thickness: 75,
+  roughness: 0.25,
+  ior: 1.5,
+  /* Normal map makes the surface look rough.
+     Source: https://opengameart.org/node/8180 */
+  normalMap: textureLoader.load('static/packeddirt_n.jpg'),
+  // Add some scratches to the surface.
+  clearcoatNormalMap: textureLoader.load('https://threejs.org/examples/textures/pbr/Scratched_gold/Scratched_gold_01_1K_Normal.png', applyCommonSettingsToTextureMap),
+  clearcoat: 0.5,
+  /* "In case the material has a normal map authored using the left handed convention, the y component of normalScale
+     should be negated to compensate for the different handedness."
+     https://threejs.org/docs/#api/en/materials/MeshPhongMaterial.normalScale */
+  clearcoatNormalScale: new THREE.Vector2(1.0, -1.0),
+  envMap: new RGBELoader().load(
+    'https://cdn.glitch.global/76fe1fa3-d3aa-4d7b-911f-8ad91e01d136/studio_small_08_2k.hdr?v=1646042358774',
+    (texture) => {
+      texture.mapping = THREE.EquirectangularReflectionMapping
+  	  scene.background = texture
+      scene.environment = texture
+    })
+}
 const diceArray = []
 diceOptions.forEach((option, index) => { // eslint-disable-line no-undef
   const [type, value] = option
@@ -64,29 +97,28 @@ diceOptions.forEach((option, index) => { // eslint-disable-line no-undef
   let dice
   switch (type) {
     case 'd4':
-      dice = new DiceD4({ backColor: '#ffffff' })
+      dice = new DiceD4({ backColor: '#ffffff', materialOptions })
       break
     case 'd6':
-      dice = new DiceD6({ backColor: '#ffffff' })
+      dice = new DiceD6({ backColor: '#ffffff', materialOptions })
       break
     case 'd8':
-      dice = new DiceD8({ backColor: '#ffffff' })
+      dice = new DiceD8({ backColor: '#ffffff', materialOptions })
       break
     case 'd10':
-      dice = new DiceD10({ backColor: '#ffffff' })
+      dice = new DiceD10({ backColor: '#ffffff', materialOptions })
       break
     case 'd12':
-      dice = new DiceD12({ backColor: '#ffffff' })
+      dice = new DiceD12({ backColor: '#ffffff', materialOptions })
       break
     case 'd20':
-      dice = new DiceD20({ backColor: '#ffffff' })
+      dice = new DiceD20({ backColor: '#ffffff', materialOptions })
       break
     default:
       break
   }
 
   if (dice) {
-    // TODO: Update the material. https://threejs.org/examples/#webgl_materials_physical_clearcoat
     dice
       .getObject()
       .position.set(
@@ -166,15 +198,6 @@ function createGround () {
   const groundMaterial = new THREE.MeshPhysicalMaterial()
   /* I really like the wooden texture from the three.js examples, so I'm going to use it here.
        https://github.com/mrdoob/three.js/blob/master/examples/webgl_lights_physical.html */
-  function applyCommonSettingsToTextureMap (map) {
-    map.wrapS = THREE.RepeatWrapping
-    map.wrapT = THREE.RepeatWrapping
-    map.anisotropy = 4
-    map.repeat.set(1, 1)
-    map.colorSpace = THREE.SRGBColorSpace
-    groundMaterial.needsUpdate = true
-  }
-  const textureLoader = new THREE.TextureLoader()
   textureLoader.load(
     'https://threejs.org/examples/textures/hardwood2_diffuse.jpg',
     (map) => {
