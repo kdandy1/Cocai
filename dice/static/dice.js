@@ -1,6 +1,7 @@
 /**
  * This file is copied from https://github.com/BreadMoirai/threejs-dice/blob/e9be5eaf60ac7b77549f056533955252b746e342/lib/dice.js
  * and modified to import modules from CDN instead of NPM.
+ * This file is reformatted with StandardJS.
  */
 
 'use strict'
@@ -160,7 +161,7 @@ class DiceObject {
     options = options || {}
 
     for (const key in defaults) {
-      if (!defaults.hasOwnProperty(key)) continue
+      if (!defaults.hasOwnProperty(key)) continue // eslint-disable-line no-prototype-builtins
 
       if (!(key in options)) {
         options[key] = defaults[key]
@@ -209,8 +210,8 @@ class DiceObject {
 
   getUpsideValue () {
     const vector = new THREE.Vector3(0, this.invertUpside ? -1 : 1)
-    let closest_face
-    let closest_angle = Math.PI * 2
+    let closestFace
+    let closestAngle = Math.PI * 2
 
     const normals = this.object.geometry.getAttribute('normal').array
     for (let i = 0; i < this.object.geometry.groups.length; ++i) {
@@ -228,13 +229,13 @@ class DiceObject {
         .clone()
         .applyQuaternion(this.object.body.quaternion)
         .angleTo(vector)
-      if (angle < closest_angle) {
-        closest_angle = angle
-        closest_face = face
+      if (angle < closestAngle) {
+        closestAngle = angle
+        closestFace = face
       }
     }
 
-    return closest_face.materialIndex - 1
+    return closestFace.materialIndex - 1
   }
 
   getCurrentVectors () {
@@ -274,29 +275,29 @@ class DiceObject {
   }
 
   getChamferGeometry (vectors, faces, chamfer) {
-    const chamfer_vectors = []
-    const chamfer_faces = []
-    const corner_faces = new Array(vectors.length)
-    for (let i = 0; i < vectors.length; ++i) corner_faces[i] = []
+    const chamferVectors = []
+    const chamferFaces = []
+    const cornerFaces = new Array(vectors.length)
+    for (let i = 0; i < vectors.length; ++i) cornerFaces[i] = []
     for (let i = 0; i < faces.length; ++i) {
       const ii = faces[i]
       const fl = ii.length - 1
-      const center_point = new THREE.Vector3()
+      const centerPoint = new THREE.Vector3()
       const face = new Array(fl)
       for (let j = 0; j < fl; ++j) {
         const vv = vectors[ii[j]].clone()
-        center_point.add(vv)
-        corner_faces[ii[j]].push((face[j] = chamfer_vectors.push(vv) - 1))
+        centerPoint.add(vv)
+        cornerFaces[ii[j]].push((face[j] = chamferVectors.push(vv) - 1))
       }
-      center_point.divideScalar(fl)
+      centerPoint.divideScalar(fl)
       for (let j = 0; j < fl; ++j) {
-        const vv = chamfer_vectors[face[j]]
-        vv.subVectors(vv, center_point)
+        const vv = chamferVectors[face[j]]
+        vv.subVectors(vv, centerPoint)
           .multiplyScalar(chamfer)
-          .addVectors(vv, center_point)
+          .addVectors(vv, centerPoint)
       }
       face.push(ii[fl])
-      chamfer_faces.push(face)
+      chamferFaces.push(face)
     }
     for (let i = 0; i < faces.length - 1; ++i) {
       for (let j = i + 1; j < faces.length; ++j) {
@@ -311,27 +312,27 @@ class DiceObject {
           }
         }
         if (pairs.length !== 4) continue
-        chamfer_faces.push([
-          chamfer_faces[pairs[0][0]][pairs[0][1]],
-          chamfer_faces[pairs[1][0]][pairs[1][1]],
-          chamfer_faces[pairs[3][0]][pairs[3][1]],
-          chamfer_faces[pairs[2][0]][pairs[2][1]],
+        chamferFaces.push([
+          chamferFaces[pairs[0][0]][pairs[0][1]],
+          chamferFaces[pairs[1][0]][pairs[1][1]],
+          chamferFaces[pairs[3][0]][pairs[3][1]],
+          chamferFaces[pairs[2][0]][pairs[2][1]],
           -1
         ])
       }
     }
-    for (let i = 0; i < corner_faces.length; ++i) {
-      const cf = corner_faces[i]
+    for (let i = 0; i < cornerFaces.length; ++i) {
+      const cf = cornerFaces[i]
       const face = [cf[0]]
       let count = cf.length - 1
       while (count) {
-        for (let m = faces.length; m < chamfer_faces.length; ++m) {
-          let index = chamfer_faces[m].indexOf(face[face.length - 1])
+        for (let m = faces.length; m < chamferFaces.length; ++m) {
+          let index = chamferFaces[m].indexOf(face[face.length - 1])
           if (index >= 0 && index < 4) {
             if (--index === -1) index = 3
-            const next_vertex = chamfer_faces[m][index]
-            if (cf.indexOf(next_vertex) >= 0) {
-              face.push(next_vertex)
+            const nextVertex = chamferFaces[m][index]
+            if (cf.indexOf(nextVertex) >= 0) {
+              face.push(nextVertex)
               break
             }
           }
@@ -339,9 +340,9 @@ class DiceObject {
         --count
       }
       face.push(-1)
-      chamfer_faces.push(face)
+      chamferFaces.push(face)
     }
-    return { vectors: chamfer_vectors, faces: chamfer_faces }
+    return { vectors: chamferVectors, faces: chamferFaces }
   }
 
   makeGeometry (vertices, faces, radius, tab, af) {
@@ -1009,8 +1010,8 @@ export class DiceD20 extends DiceObject {
 
 export const DiceManager = new DiceManagerClass()
 
-if (typeof define === 'function' && define.amd) {
-  define(function () {
+if (typeof define === 'function' && define.amd) { // eslint-disable-line no-undef
+  define(function () { // eslint-disable-line no-undef
     return {
       DiceManager,
       DiceD4,
