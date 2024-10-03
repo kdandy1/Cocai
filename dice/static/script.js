@@ -151,25 +151,6 @@ cameraControls.setLookAt(
   false
 );
 
-// Lights.
-// Ambient lights make un-illuminated areas visible.
-const ambient = new THREE.AmbientLight(0xffffff, 0.3);
-scene.add(ambient);
-
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-directionalLight.position.set(-1000, 2000, 2000);
-directionalLight.castShadow = true;
-// TODO: Dynamically adjust these values so that the shadow camera is always large enough to encompass all dice.
-directionalLight.shadow.camera.top = 1000;
-directionalLight.shadow.camera.bottom = -1000;
-directionalLight.shadow.camera.left = -1000;
-directionalLight.shadow.camera.right = 1000;
-directionalLight.shadow.camera.near = 1;
-directionalLight.shadow.camera.far = 10000;
-
-const helper = new THREE.CameraHelper(directionalLight.shadow.camera);
-scene.add(helper);
-scene.add(directionalLight);
 
 const skyBoxGeometry = new THREE.BoxGeometry(10000, 10000, 10000);
 const skyBoxMaterial = new THREE.MeshPhongMaterial({
@@ -218,6 +199,47 @@ scene.add(ground);
 ground.position.set(diceArray.length * 100, 0, 0);
 ground.rotation.set(-Math.PI / 2, 0, 0);
 ground.receiveShadow = true;
+
+groundGeometry.computeBoundingSphere();
+const boundingSphere = groundGeometry.boundingSphere;
+
+// Create the SphereGeometry for the bounding sphere
+const sphereGeometry = new THREE.SphereGeometry(boundingSphere.radius, 32, 32);
+
+// Create a wireframe material for the bounding sphere
+const wireframe = new THREE.WireframeGeometry(sphereGeometry);
+const sphereLineMaterial = new THREE.LineBasicMaterial({ color: 0xa3a3a3 });
+const sphereWireframe = new THREE.LineSegments(wireframe, sphereLineMaterial);
+
+// Position the wireframe at the center of the bounding sphere
+// TODO: `boundingSphere.center` is (0, 0, 0). Why? I have to use `ground.position`.
+sphereWireframe.position.copy(ground.position);
+
+scene.add(sphereWireframe);
+
+// Lights.
+// Ambient lights make un-illuminated areas visible.
+const ambient = new THREE.AmbientLight(0xffffff, 0.3);
+scene.add(ambient);
+
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+directionalLight.position.set(-1000, 2000, 2000);
+directionalLight.target = ground;
+directionalLight.castShadow = true;
+
+// TODO: Dynamically adjust these values so that the shadow camera is always large enough to encompass all dice.
+directionalLight.shadow.camera.top = boundingSphere.radius;
+directionalLight.shadow.camera.bottom = -boundingSphere.radius;
+directionalLight.shadow.camera.left = -boundingSphere.radius;
+directionalLight.shadow.camera.right = boundingSphere.radius;
+directionalLight.shadow.camera.near =directionalLight.position.distanceTo(ground.position)-boundingSphere.radius;
+directionalLight.shadow.camera.far = directionalLight.position.distanceTo(ground.position)+boundingSphere.radius;
+directionalLight.shadow.camera.lookAt(ground.position);
+console.log(ground.position)
+const helper = new THREE.CameraHelper(directionalLight.shadow.camera);
+scene.add(helper);
+scene.add(directionalLight);
+
 
 function animate() {
   world.step(1.0 / 60.0);
