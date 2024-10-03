@@ -8,7 +8,6 @@
 
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.169.0/+esm'
 import * as CANNON from 'https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.min.js'
-import { FlakesTexture } from 'https://cdn.statically.io/gh/mrdoob/three.js/37d6f280a5cd642e801469bb048f52300d31258e/examples/jsm/textures/FlakesTexture.js'
 class DiceManagerClass {
   constructor () {
     this.world = null
@@ -471,12 +470,15 @@ class DiceObject {
   }
 
   createTextTexture (text, color, backColor) {
-    const ts =
-      this.calculateTextureSize(this.size / 2 + this.size * this.textMargin) * 2
-    const canvas = new FlakesTexture(ts, ts)
-
+    const canvas = document.createElement('canvas')
     const context = canvas.getContext('2d')
+    const ts =
+      this.calculateTextureSize(this.size / 2 + this.size * this.textMargin) *
+      2
+    canvas.width = canvas.height = ts
     context.font = ts / (1 + 2 * this.textMargin) + 'pt Arial'
+    context.fillStyle = backColor
+    context.fillRect(0, 0, canvas.width, canvas.height)
     context.textAlign = 'center'
     context.textBaseline = 'middle'
     context.fillStyle = color
@@ -629,11 +631,13 @@ export class DiceD4 extends DiceObject {
       this.object.material = this.getMaterials()
     }
     this.customTextTextureFunction = function (text, color, backColor) {
-      const ts =
-          this.calculateTextureSize(this.size / 2 + this.size * 2) * 2
-      const canvas = new FlakesTexture(ts, ts)
+      const canvas = document.createElement('canvas')
       const context = canvas.getContext('2d')
+      const ts = this.calculateTextureSize(this.size / 2 + this.size * 2) * 2
+      canvas.width = canvas.height = ts
       context.font = ts / 5 + 'pt Arial'
+      context.fillStyle = backColor
+      context.fillRect(0, 0, canvas.width, canvas.height)
       context.textAlign = 'center'
       context.textBaseline = 'middle'
       context.fillStyle = color
