@@ -508,7 +508,7 @@ class DiceObject {
 
       materials.push(
         new THREE.MeshPhysicalMaterial(
-          Object.assign({}, this.materialOptions, { map: texture })
+          Object.assign({}, this.materialOptions, { map: texture, alphaMap: texture })
         )
       )
     }
