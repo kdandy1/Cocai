@@ -47,3 +47,7 @@ repos:
       args: [ --fix ]
     - id: ruff-format
       name: "Format code with Ruff"
+- repo: https://github.com/standard/standard
+  rev: master
+  hooks:
+    - id: standard
