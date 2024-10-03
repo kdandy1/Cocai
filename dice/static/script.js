@@ -56,7 +56,7 @@ world.addBody(floorBody)
 DiceManager.setWorld(world)
 
 const diceArray = []
-diceOptions.forEach((option, index) => {
+diceOptions.forEach((option, index) => { // eslint-disable-line no-undef
   const [type, value] = option
 
   let dice
@@ -249,10 +249,10 @@ function animate () {
   })
 
   const delta = clock.getDelta()
-  const hasControlsUpdated = cameraControls.update(delta)
-  requestAnimationFrame(animate)
+  cameraControls.update(delta)
+  requestAnimationFrame(animate) // eslint-disable-line no-undef
 
   renderer.render(scene, camera)
 }
 
-requestAnimationFrame(animate)
+requestAnimationFrame(animate) // eslint-disable-line no-undef
