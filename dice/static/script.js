@@ -1,6 +1,11 @@
 import * as THREE from 'three'
 import * as CANNON from 'https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.min.js'
 import CameraControls from 'https://cdn.jsdelivr.net/npm/camera-controls@2.9.0/+esm'
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
+import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js'
 import {
   DiceManager,
   DiceD4,
@@ -203,6 +208,22 @@ function createGround () {
 const ground = createGround()
 const boundingSphere = ground.geometry.boundingSphere
 
+/* Add Bloom effect to the scene.
+  https://github.com/mrdoob/three.js/blob/37d6f280a5cd642e801469bb048f52300d31258e/examples/webgl_postprocessing_unreal_bloom.html */
+const renderScene = new RenderPass(scene, camera)
+
+const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85)
+bloomPass.threshold = 0.9
+bloomPass.strength = 0.2
+bloomPass.radius = 0
+
+const outputPass = new OutputPass()
+
+const composer = new EffectComposer(renderer)
+composer.addPass(renderScene)
+composer.addPass(bloomPass)
+composer.addPass(outputPass)
+
 function animate () {
   world.step(1.0 / 60.0)
   diceArray.forEach((diceObj) => {
@@ -212,8 +233,7 @@ function animate () {
   const delta = clock.getDelta()
   cameraControls.update(delta)
   requestAnimationFrame(animate) // eslint-disable-line no-undef
-
-  renderer.render(scene, camera)
+  composer.render()
 }
 
 requestAnimationFrame(animate) // eslint-disable-line no-undef
