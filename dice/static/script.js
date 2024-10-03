@@ -86,7 +86,7 @@ const materialOptions = {
     'https://cdn.glitch.global/76fe1fa3-d3aa-4d7b-911f-8ad91e01d136/studio_small_08_2k.hdr?v=1646042358774',
     (texture) => {
       texture.mapping = THREE.EquirectangularReflectionMapping
-  	  scene.background = texture
+      scene.background = texture
       scene.environment = texture
     })
 }
@@ -225,11 +225,9 @@ function createGround () {
   ground.position.set(diceArray.length * 100, 0, 0)
   ground.rotation.set(-Math.PI / 2, 0, 0)
   ground.receiveShadow = true
-  groundGeometry.computeBoundingSphere()
   return ground
 }
-const ground = createGround()
-const boundingSphere = ground.geometry.boundingSphere
+createGround()
 
 /* Add Bloom effect to the scene.
   https://github.com/mrdoob/three.js/blob/37d6f280a5cd642e801469bb048f52300d31258e/examples/webgl_postprocessing_unreal_bloom.html */
