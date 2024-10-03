@@ -163,7 +163,7 @@ function createGround () {
     // ... but still have a fixed height.
     800)
   // Create a material for the ground.
-  const groundMaterial = new THREE.MeshStandardMaterial({ bumpScale: 20 })
+  const groundMaterial = new THREE.MeshPhysicalMaterial()
   /* I really like the wooden texture from the three.js examples, so I'm going to use it here.
        https://github.com/mrdoob/three.js/blob/master/examples/webgl_lights_physical.html */
   function applyCommonSettingsToTextureMap (map) {
