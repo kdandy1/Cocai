@@ -1,4 +1,4 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.169.0/+esm'
+import * as THREE from 'three'
 import * as CANNON from 'https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.min.js'
 import CameraControls from 'https://cdn.jsdelivr.net/npm/camera-controls@2.9.0/+esm'
 import {

@@ -7,6 +7,15 @@
     <style>
         body { margin: 0; overflow: hidden; }
     </style>
+    <!-- https://sbcode.net/threejs/importmap/#import-maps-from-a-cdn -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.169.0/build/three.module.js",
+                "three/": "https://unpkg.com/three@0.169.0/"
+            }
+        }
+    </script>
     <script>
         const diceOptions = {{ dice_options }};
     </script>

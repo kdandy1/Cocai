@@ -6,7 +6,7 @@
 
 'use strict'
 
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.169.0/+esm'
+import * as THREE from 'three'
 import * as CANNON from 'https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.min.js'
 class DiceManagerClass {
   constructor () {
