@@ -160,85 +160,88 @@ const skyBoxMaterial = new THREE.MeshPhongMaterial({
 const skyBox = new THREE.Mesh(skyBoxGeometry, skyBoxMaterial);
 scene.add(skyBox);
 
-const groundGeometry = new THREE.PlaneGeometry(diceArray.length * 300, 800);
-const groundMaterial = new THREE.MeshStandardMaterial({ bumpScale: 20 });
-// Wooden texture taken from https://github.com/mrdoob/three.js/blob/master/examples/webgl_lights_physical.html
-function applyCommonSettingsToTextureMap(map) {
-  map.wrapS = THREE.RepeatWrapping;
-  map.wrapT = THREE.RepeatWrapping;
-  map.anisotropy = 4;
-  map.repeat.set(1, 1);
-  map.colorSpace = THREE.SRGBColorSpace;
-  groundMaterial.needsUpdate = true;
+/** We want to render a plane as the "ground" of our scene, where dices will bounce off and settle still.
+   Note how this is different from the `floorBody` that we added to the Cannon.js world.
+   The `ground` mesh is a visual representation of the ground, while the `floorBody` is a physical representation of the ground. */
+function createGround() {
+    const groundGeometry = new THREE.PlaneGeometry(
+        // We want the ground to be wide enough to encompass all dices...
+        diceArray.length * 300,
+        // ... but still have a fixed height.
+        800);
+    // Create a material for the ground.
+    const groundMaterial = new THREE.MeshStandardMaterial({ bumpScale: 20 });
+    /* I really like the wooden texture from the three.js examples, so I'm going to use it here.
+       https://github.com/mrdoob/three.js/blob/master/examples/webgl_lights_physical.html */
+    function applyCommonSettingsToTextureMap(map) {
+      map.wrapS = THREE.RepeatWrapping;
+      map.wrapT = THREE.RepeatWrapping;
+      map.anisotropy = 4;
+      map.repeat.set(1, 1);
+      map.colorSpace = THREE.SRGBColorSpace;
+      groundMaterial.needsUpdate = true;
+    }
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.load(
+      "https://threejs.org/examples/textures/hardwood2_diffuse.jpg",
+      (map) => {
+        groundMaterial.map = map;
+        applyCommonSettingsToTextureMap(map);
+      }
+    );
+    textureLoader.load(
+      "https://threejs.org/examples/textures/hardwood2_bump.jpg",
+      (map) => {
+        groundMaterial.bumpMap = map;
+        applyCommonSettingsToTextureMap(map);
+      }
+    );
+    textureLoader.load(
+      "https://threejs.org/examples/textures/hardwood2_roughness.jpg",
+      (map) => {
+        groundMaterial.roughnessMap = map;
+        applyCommonSettingsToTextureMap(map);
+      }
+    );
+
+    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+    scene.add(ground);
+    ground.position.set(diceArray.length * 100, 0, 0);
+    ground.rotation.set(-Math.PI / 2, 0, 0);
+    ground.receiveShadow = true;
+    groundGeometry.computeBoundingSphere();
+    return ground;
 }
-const textureLoader = new THREE.TextureLoader();
-textureLoader.load(
-  "https://threejs.org/examples/textures/hardwood2_diffuse.jpg",
-  (map) => {
-    groundMaterial.map = map;
-    applyCommonSettingsToTextureMap(map);
-  }
-);
-textureLoader.load(
-  "https://threejs.org/examples/textures/hardwood2_bump.jpg",
-  (map) => {
-    groundMaterial.bumpMap = map;
-    applyCommonSettingsToTextureMap(map);
-  }
-);
-textureLoader.load(
-  "https://threejs.org/examples/textures/hardwood2_roughness.jpg",
-  (map) => {
-    groundMaterial.roughnessMap = map;
-    applyCommonSettingsToTextureMap(map);
-  }
-);
+const ground = createGround();
+const boundingSphere = ground.geometry.boundingSphere;
 
-const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-scene.add(ground);
-ground.position.set(diceArray.length * 100, 0, 0);
-ground.rotation.set(-Math.PI / 2, 0, 0);
-ground.receiveShadow = true;
-
-groundGeometry.computeBoundingSphere();
-const boundingSphere = groundGeometry.boundingSphere;
-
-// Create the SphereGeometry for the bounding sphere
-const sphereGeometry = new THREE.SphereGeometry(boundingSphere.radius, 32, 32);
-
-// Create a wireframe material for the bounding sphere
-const wireframe = new THREE.WireframeGeometry(sphereGeometry);
-const sphereLineMaterial = new THREE.LineBasicMaterial({ color: 0xa3a3a3 });
-const sphereWireframe = new THREE.LineSegments(wireframe, sphereLineMaterial);
-
-// Position the wireframe at the center of the bounding sphere
-// TODO: `boundingSphere.center` is (0, 0, 0). Why? I have to use `ground.position`.
-sphereWireframe.position.copy(ground.position);
-
-scene.add(sphereWireframe);
-
-// Lights.
-// Ambient lights make un-illuminated areas visible.
+// ====================================================== Lights ======================================================
+// --------------------------------- Ambient lights make un-illuminated areas visible ---------------------------------
 const ambient = new THREE.AmbientLight(0xffffff, 0.3);
 scene.add(ambient);
-
+// --------------------------------------- Directional lights simulate sunlight ---------------------------------------
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+// We want it to be positioned in the sky...
 directionalLight.position.set(-1000, 2000, 2000);
+// ... and point at the ground.
 directionalLight.target = ground;
+// - - - - - - - - - - - - - - - - - - - - - We want the light to cast shadows - - - - - - - - - - - - - - - - - - - -
 directionalLight.castShadow = true;
-
-// TODO: Dynamically adjust these values so that the shadow camera is always large enough to encompass all dice.
+/* Shadows casted by a directional light is determined with a camera. We want to ensure that it encompasses the
+   entire ground, but not any bigger (to save computational resources).
+   We do so by calculating the bounding sphere of the ground and then encompassing the camera's frustum around it.
+   The use of a bounding sphere is intuitive, because we are dealing with the problem of a beam (the light) and a
+   volume (the ground and all dices on it). */
 directionalLight.shadow.camera.top = boundingSphere.radius;
 directionalLight.shadow.camera.bottom = -boundingSphere.radius;
 directionalLight.shadow.camera.left = -boundingSphere.radius;
 directionalLight.shadow.camera.right = boundingSphere.radius;
-directionalLight.shadow.camera.near =directionalLight.position.distanceTo(ground.position)-boundingSphere.radius;
-directionalLight.shadow.camera.far = directionalLight.position.distanceTo(ground.position)+boundingSphere.radius;
+const distance = directionalLight.position.distanceTo(ground.position);
+directionalLight.shadow.camera.near = distance-boundingSphere.radius;
+directionalLight.shadow.camera.far = distance+boundingSphere.radius;
 directionalLight.shadow.camera.lookAt(ground.position);
-console.log(ground.position)
-const helper = new THREE.CameraHelper(directionalLight.shadow.camera);
-scene.add(helper);
 scene.add(directionalLight);
+// =====================================================^ Lights ^=====================================================
 
 
 function animate() {
