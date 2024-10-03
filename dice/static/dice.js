@@ -147,12 +147,17 @@ class DiceObject {
     this.size = options.size
     this.invertUpside = false
 
+    const textureLoader = new THREE.TextureLoader()
+    const clearcoatNormalMap = textureLoader.load('https://threejs.org/examples/textures/pbr/Scratched_gold/Scratched_gold_01_1K_Normal.png')
+
     this.materialOptions = {
-      specular: 0x172022,
-      color: 0xf0f0f0,
-      shininess: 40,
-      flatShading: true
-      // shading: THREE.FlatShading,
+      flatShading: true,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.1,
+      metalness: 0.9,
+      roughness: 0.5,
+      clearcoatNormalMap,
+      normalScale: new THREE.Vector2(0.15, 0.15)
     }
     this.labelColor = options.fontColor
     this.diceColor = options.backColor
@@ -500,7 +505,7 @@ class DiceObject {
       }
 
       materials.push(
-        new THREE.MeshPhongMaterial(
+        new THREE.MeshPhysicalMaterial(
           Object.assign({}, this.materialOptions, { map: texture })
         )
       )
