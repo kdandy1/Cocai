@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import * as CANNON from 'https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.min.js'
+import * as CANNON from 'cannon-es'
 import CameraControls from 'https://cdn.jsdelivr.net/npm/camera-controls@2.9.0/+esm'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
@@ -14,7 +14,7 @@ import {
   DiceD10,
   DiceD12,
   DiceD20
-} from './dice.js'
+} from 'threejs-dice'
 
 CameraControls.install({ THREE })
 
