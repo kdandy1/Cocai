@@ -161,12 +161,13 @@ diceOptions.forEach((option, index) => { // eslint-disable-line no-undef
 })
 DiceManager.prepareValues(diceArray)
 
+// Initialize the camera. We see the scene through this camera.
 // https://threejs.org/docs/#api/en/cameras/PerspectiveCamera
 const camera = new THREE.PerspectiveCamera(
-  45,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  100000
+  45, // vertical field of view
+  window.innerWidth / window.innerHeight, // aspect ratio
+  0.1, // can see very near
+  100000 // can see very far
 )
 camera.up = new THREE.Vector3(0, 1, 0)
 scene.add(camera)
@@ -176,13 +177,11 @@ const clock = new THREE.Clock()
 const cameraControls = new CameraControls(camera, renderer.domElement)
 // Use `cameraControls.setLookAt` instead of `camera.position` and `camera.lookAt`.
 cameraControls.setLookAt(
-  diceArray.length * 100,
-  1000,
-  500,
-  diceArray.length * 100,
-  100,
-  100,
-  false
+  // sitting at...
+  diceArray.length * 100, 1000, 500,
+  // gazing at...
+  diceArray.length * 100, 100, 100,
+  false // Don't animate the transition.
 )
 
 /** We want to render a plane as the "ground" of our scene, where dices will bounce off and settle still.
