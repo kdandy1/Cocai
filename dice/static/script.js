@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import * as CANNON from 'cannon-es'
-import CameraControls from 'https://cdn.jsdelivr.net/npm/camera-controls@2.9.0/+esm'
+import CameraControls from 'camera-controls'
 import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
