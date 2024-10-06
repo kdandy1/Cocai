@@ -91,9 +91,7 @@ const materialOptions = {
     })
 }
 const diceArray = []
-diceOptions.forEach((option, index) => { // eslint-disable-line no-undef
-  const [type, value] = option
-
+diceOptions.forEach(([type, value], index) => { // eslint-disable-line no-undef
   let dice
   switch (type) {
     case 'd4':
