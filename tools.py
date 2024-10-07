@@ -7,6 +7,7 @@ from functools import wraps
 from pathlib import Path
 from typing import List, Literal, Optional
 
+import chainlit as cl
 import cochar.skill
 from cochar.character import Character
 from llama_index.core import Settings, SimpleDirectoryReader, VectorStoreIndex
@@ -243,7 +244,26 @@ def roll_a_skill(
     Roll a skill check and check the result.
     """
     dice_outcome = random.randint(1, 100)
+    tenth_digit = dice_outcome // 10
+    if tenth_digit == 0:
+        tenth_digit = 10
+    ones_digit = dice_outcome % 10
+    if ones_digit == 0:
+        ones_digit = 10
+    message = cl.Message(
+        content="",
+        author="roll_a_skill",
+        elements=[
+            cl.Pdf(
+                name="fake-pdf",
+                display="inline",
+                url=f"/roll_dice?d10={tenth_digit}&d10={ones_digit}",
+            )
+        ],
+    )
+    cl.run_sync(message.send())
+
     result = __map_dice_outcome_to_degree_of_success(
-        difficulty, dice_outcome, skill_value
+        difficulty, dice_outcome, int(skill_value)
     )
     return f"You rolled a {dice_outcome}. That's a {result.name.lower().replace('_', ' ')}!"
