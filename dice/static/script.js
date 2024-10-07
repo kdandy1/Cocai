@@ -190,27 +190,22 @@ function createGround () {
   const groundMaterial = new THREE.MeshPhysicalMaterial()
   /* I really like the wooden texture from the three.js examples, so I'm going to use it here.
        https://github.com/mrdoob/three.js/blob/master/examples/webgl_lights_physical.html */
-  textureLoader.load(
-    'https://threejs.org/examples/textures/hardwood2_diffuse.jpg',
+  const baseUrl = 'https://threejs.org/examples/textures/hardwood2_'
+  textureLoader.load(baseUrl + 'diffuse.jpg',
     (map) => {
       groundMaterial.map = map
       applyCommonSettingsToTextureMap(map)
-    }
-  )
-  textureLoader.load(
-    'https://threejs.org/examples/textures/hardwood2_bump.jpg',
+    })
+  textureLoader.load(baseUrl + 'bump.jpg',
     (map) => {
       groundMaterial.bumpMap = map
       applyCommonSettingsToTextureMap(map)
-    }
-  )
-  textureLoader.load(
-    'https://threejs.org/examples/textures/hardwood2_roughness.jpg',
+    })
+  textureLoader.load(baseUrl + 'roughness.jpg',
     (map) => {
       groundMaterial.roughnessMap = map
       applyCommonSettingsToTextureMap(map)
-    }
-  )
+    })
 
   const ground = new THREE.Mesh(groundGeometry, groundMaterial)
   scene.add(ground)
