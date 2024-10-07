@@ -62,7 +62,13 @@ function applyCommonSettingsToTextureMap (map) {
   map.repeat.set(1, 1)
   map.colorSpace = THREE.SRGBColorSpace
 }
-
+new RGBELoader().load(
+  'https://cdn.glitch.global/76fe1fa3-d3aa-4d7b-911f-8ad91e01d136/studio_small_08_2k.hdr?v=1646042358774',
+  (texture) => {
+    texture.mapping = THREE.EquirectangularReflectionMapping
+    scene.background = texture
+    scene.environment = texture
+  })
 /* https://tympanus.net/codrops/2021/10/27/creating-the-effect-of-transparent-glass-and-plastic-in-three-js/ */
 const materialOptions = {
   transmission: 1,
@@ -78,14 +84,7 @@ const materialOptions = {
   /* "In case the material has a normal map authored using the left handed convention, the y component of normalScale
      should be negated to compensate for the different handedness."
      https://threejs.org/docs/#api/en/materials/MeshPhongMaterial.normalScale */
-  clearcoatNormalScale: new THREE.Vector2(1.0, -1.0),
-  envMap: new RGBELoader().load(
-    'https://cdn.glitch.global/76fe1fa3-d3aa-4d7b-911f-8ad91e01d136/studio_small_08_2k.hdr?v=1646042358774',
-    (texture) => {
-      texture.mapping = THREE.EquirectangularReflectionMapping
-      scene.background = texture
-      scene.environment = texture
-    })
+  clearcoatNormalScale: new THREE.Vector2(1.0, -1.0)
 }
 const diceArray = []
 diceOptions.forEach(([type, value], index) => { // eslint-disable-line no-undef
