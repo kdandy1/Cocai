@@ -1,6 +1,7 @@
 from itertools import chain, repeat
 from typing import Annotated, List
 
+from chainlit.utils import mount_chainlit
 from fastapi import FastAPI, Query
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -45,6 +46,5 @@ async def roll_dice(
     return template.render(dice_options=dice_data)
 
 
-# mount_chainlit(app=app, target="main.py", path="/chat")
+mount_chainlit(app=app, target="main.py", path="/chat")
 # To see how dice rolling works, uncomment the following line and comment out the line above.
-# mount_chainlit(app=app, target="dice/demo.py", path="/demo/dice")
