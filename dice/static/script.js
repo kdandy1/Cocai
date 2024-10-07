@@ -95,22 +95,22 @@ diceOptions.forEach(([type, value], index) => { // eslint-disable-line no-undef
   let dice
   switch (type) {
     case 'd4':
-      dice = new DiceD4({ backColor: '#ffffff', materialOptions })
+      dice = new DiceD4({ materialOptions })
       break
     case 'd6':
-      dice = new DiceD6({ backColor: '#ffffff', materialOptions })
+      dice = new DiceD6({ materialOptions })
       break
     case 'd8':
-      dice = new DiceD8({ backColor: '#ffffff', materialOptions })
+      dice = new DiceD8({ materialOptions })
       break
     case 'd10':
-      dice = new DiceD10({ backColor: '#ffffff', materialOptions })
+      dice = new DiceD10({ materialOptions })
       break
     case 'd12':
-      dice = new DiceD12({ backColor: '#ffffff', materialOptions })
+      dice = new DiceD12({ materialOptions })
       break
     case 'd20':
-      dice = new DiceD20({ backColor: '#ffffff', materialOptions })
+      dice = new DiceD20({ materialOptions })
       break
     default:
       break
