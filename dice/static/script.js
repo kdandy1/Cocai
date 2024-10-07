@@ -144,7 +144,6 @@ diceOptions.forEach(([type, value], index) => { // eslint-disable-line no-undef
         getRandomArbitrary(-5, 5),
         getRandomArbitrary(-5, 5)
       )
-    dice.getObject().receiveShadow = true
 
     dice.updateBodyFromMesh()
 
