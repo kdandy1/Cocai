@@ -24,9 +24,6 @@ function getRandomArbitrary (min, max) {
 }
 
 const scene = new THREE.Scene()
-// "[FogExp2] gives a clear view near the camera and a faster than exponentially densening fog farther from the camera"
-// https://threejs.org/docs/#api/en/scenes/FogExp2
-scene.fog = new THREE.FogExp2(0xffffff, 0.00025)
 
 // Initialize the renderer.
 const renderer = new THREE.WebGLRenderer({ antialias: true })
