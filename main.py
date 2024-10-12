@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import logging
 import os
+from typing import List
 
 import chainlit as cl
 import phoenix as px
@@ -10,7 +11,7 @@ from llama_index.core.agent import AgentRunner
 from llama_index.core.callbacks import CallbackManager, LlamaDebugHandler
 from llama_index.core.memory import ChatMemoryBuffer
 from llama_index.core.storage.chat_store import SimpleChatStore
-from llama_index.core.tools import FunctionTool
+from llama_index.core.tools import BaseTool, FunctionTool
 from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.tools.tavily_research import TavilyToolSpec
 from phoenix.trace.llama_index import OpenInferenceTraceCallbackHandler
@@ -84,10 +85,7 @@ def create_callback_manager(should_use_chainlit: bool = True) -> CallbackManager
     return CallbackManager(callback_handlers)
 
 
-def create_agent(
-    should_use_chainlit: bool,
-    max_action_steps: int = 5,
-) -> AgentRunner:
+def set_up_llama_index(should_use_chainlit: bool, max_action_steps: int = 5):
     # Needed for "Retrieved the following sources" to show up on Chainlit.
     Settings.callback_manager = create_callback_manager(should_use_chainlit)
     # ============= Beginning of the code block for wiring on to models. =============
@@ -159,12 +157,26 @@ def create_agent(
         "{allowance}",
         str(max_action_steps),
     )
+    return all_tools, my_system_prompt
+
+
+all_tools, my_system_prompt = set_up_llama_index(should_use_chainlit=False)
+
+
+def create_agent(
+    all_tools: List[BaseTool], my_system_prompt: str, chat_store_key: str
+) -> AgentRunner:
+    chat_memory = ChatMemoryBuffer.from_defaults(
+        chat_store=chat_store,
+        chat_store_key=chat_store_key,
+    )
     agent = OpenAIAgent.from_tools(
         system_prompt=my_system_prompt,
         tools=all_tools,
         verbose=True,
         # x2: An observation step also takes as an iteration.
         # +1: The final output reasoning step needs to take a spot.
+        memory=chat_memory,
     )
     return agent
 
@@ -197,7 +209,12 @@ async def set_starters():
 
 @cl.on_chat_start
 async def factory():
-    cl.user_session.set("agent", create_agent(should_use_chainlit=True))
+    cl.user_session.set(
+        "agent",
+        create_agent(
+            all_tools, my_system_prompt, chat_store_key=cl.user_session.get("id")
+        ),
+    )
 
 
 @cl.on_chat_end
@@ -222,11 +239,6 @@ async def main(message: cl.Message):
     ```
     """
     agent: AgentRunner = cl.user_session.get("agent")
-    app_user = cl.user_session.get("user").identifier or "guest"
-    chat_memory = ChatMemoryBuffer.from_defaults(
-        chat_store=chat_store,
-        chat_store_key=app_user,
-    )
     # The Chainlit doc recommends using `await cl.make_async(agent.chat)(message.content)` instead:
     # > The make_async function takes a synchronous function (for instance a LangChain agent) and returns an
     # > asynchronous function that will run the original function in a separate thread. This is useful to run
@@ -234,19 +246,7 @@ async def main(message: cl.Message):
     # (https://docs.chainlit.io/api-reference/make-async#make-async)
     # I thought we can just use `agent.achat` directly, but it would cause `<ContextVar name='chainlit' at 0x...>`.
     # TODO: streaming seems broken. Why?
-    response = await cl.make_async(agent.chat)(
-        message.content, chat_history=chat_memory.get_all()
-    )
+    response = await cl.make_async(agent.chat)(message.content)
     response_message = cl.Message(content="")
     response_message.content = response.response
     await response_message.send()
-
-
-if __name__ == "__main__":
-    # This block
-    agent = create_agent(should_use_chainlit=False)
-    try:
-        agent.chat_repl()
-    except KeyboardInterrupt:
-        logger.warning("Interrupted. Persisting chat storage.")
-        chat_store.persist(persist_path="chat_store.json")
