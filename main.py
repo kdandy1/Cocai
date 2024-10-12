@@ -15,7 +15,6 @@ from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.tools.tavily_research import TavilyToolSpec
 from phoenix.trace.llama_index import OpenInferenceTraceCallbackHandler
 
-from my_monkey_patch import ChainlitCallbackHandler
 from tools import (
     ToolForConsultingTheModule,
     ToolForSuggestingChoices,
@@ -54,7 +53,7 @@ def auth_callback(username: str, password: str):
         return None
 
 
-def create_callback_manager(should_use_chainlit: bool = True) -> CallbackManager:
+def create_callback_manager() -> CallbackManager:
     # Phoenix can display in real time the traces automatically collected from your LlamaIndex application.
     # The one-click way is as follows:
     # ```
@@ -71,12 +70,7 @@ def create_callback_manager(should_use_chainlit: bool = True) -> CallbackManager
     ]
     if SHOULD_USE_PHOENIX:
         callback_handlers.append(OpenInferenceTraceCallbackHandler())
-    if should_use_chainlit:
-        callback_handlers.append(
-            # TODO: When https://github.com/Chainlit/chainlit/pull/1285 is merged,
-            #  change this back to `cl.LlamaIndexCallbackHandler()`.
-            ChainlitCallbackHandler()
-        )
+    callback_handlers.append(cl.LlamaIndexCallbackHandler())
     return CallbackManager(callback_handlers)
 
 
@@ -85,7 +79,7 @@ def set_up_llama_index(should_use_chainlit: bool, max_action_steps: int = 5):
     One-time setup code for shared objects across all AgentRunners.
     """
     # Needed for "Retrieved the following sources" to show up on Chainlit.
-    Settings.callback_manager = create_callback_manager(should_use_chainlit)
+    Settings.callback_manager = create_callback_manager()
     # ============= Beginning of the code block for wiring on to models. =============
     # At least when Chainlit is involved, LLM initializations must happen upon the `@cl.on_chat_start` event,
     # not in the global scope.
