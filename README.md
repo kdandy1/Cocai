@@ -60,6 +60,8 @@ You'll need it in Markdown format, though. If you can only find the PDF edition,
 
 Run `chainlit create-secret` to generate a JWT token. Follow the instructions to add the secret to `.env`.
 
+
+
 ### Running the Chatbot
 
 If you are not providing a environment variable `OPENAI_API_KEY` for the OpenAI API key, ensure that you have an Ollama server running at `http://localhost:11434/v1`:
@@ -68,6 +70,19 @@ If you are not providing a environment variable `OPENAI_API_KEY` for the OpenAI 
 ollama serve
 ```
 
+In another terminal, start serving minIO:
+
+```shell
+minio server .minio/
+```
+
+Optionally, to enable your AI Keeper to draw illustrations, run a "Stable Diffusion web UI" server with API support turned on:
+
+```shell
+./webui.sh --api
+```
+
+If Stable Diffision is not running, the AI Keeper will still be able to generate text-based responses. It's just that it won't be able to draw illustrations.
 
 You can start the chatbot by running:
 
@@ -76,9 +91,3 @@ just serve
 ```
 
 Then, navigate to `http://localhost:8000/chat/` in your browser.
-
-To enable your AI Keeper to draw illustrations, run a "Stable Diffusion web UI" server with API support turned on:
-
-```shell
-./webui.sh --api
-```
