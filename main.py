@@ -100,6 +100,18 @@ def set_up_llama_index(should_use_chainlit: bool, max_action_steps: int = 5):
             is_function_calling_model=True,
             is_chat_model=True,
         )
+    if api_key := os.environ.get("TOGETHER_AI_API_KEY", None):
+        logger.info("Using Together AI API.")
+        from llama_index.llms.openai_like import OpenAILike
+
+        Settings.llm = OpenAILike(
+            model="meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+            api_base="https://api.together.xyz/v1",
+            api_key=api_key,
+            is_function_calling_model=True,
+            is_chat_model=True,
+        )
+
     else:
         logger.info("Using Ollama's OpenAI-compatible API.")
         from llama_index.llms.openai_like import OpenAILike
