@@ -103,7 +103,8 @@ minio server .minio/
 Optionally, to enable your AI Keeper to draw illustrations, run a "Stable Diffusion web UI" server with API support turned on:
 
 ```shell
-./webui.sh --api
+cd ../stable-diffusion-webui
+./webui.sh --api --nowebui --port 7860
 ```
 
 If Stable Diffusion is not running, the AI Keeper will still be able to generate text-based responses. It's just that it won't be able to draw illustrations.
