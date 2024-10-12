@@ -32,18 +32,14 @@ SHOULD_USE_PHOENIX = True
 if SHOULD_USE_PHOENIX:
     px.launch_app()
 
-SHOULD_PERSIST_CHAT_STORE = False
 logger = logging.getLogger(__name__)
 
-if SHOULD_PERSIST_CHAT_STORE:
-    # https://docs.llamaindex.ai/en/stable/module_guides/storing/chat_stores/#simplechatstore
-    try:
-        chat_store = SimpleChatStore.from_persist_path(persist_path="chat_store.json")
-    except Exception as e:
-        logger.warning(f"Failed to load chat store from file: {e}, using a new one.")
-        chat_store = SimpleChatStore()
-else:
-    chat_store = SimpleChatStore()
+# This object holds all chat histories that occur throughout the current LlamaIndex process.
+# This does not mean all chat histories/chat sessions that happened across boot-ups;
+# those are handled by the data persistence layer in Chainlit.
+# That said, we would still like to have a global variable for this, so that it can be shared across all chat
+# memories / chat sessions; otherwise, the default behavior is initializing one chat store per chat session.
+chat_store = SimpleChatStore()
 
 set_up_data_layer()
 
@@ -215,10 +211,7 @@ async def factory():
 
 @cl.on_chat_end
 async def cleanup():
-    logger = logging.getLogger("on-chat-end")
-    if SHOULD_PERSIST_CHAT_STORE:
-        logger.warning("Interrupted. Persisting chat storage.")
-        chat_store.persist(persist_path="chat_store.json")
+    pass
 
 
 @cl.on_message
