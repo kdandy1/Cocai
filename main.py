@@ -222,18 +222,7 @@ async def cleanup():
 
 
 @cl.on_message
-async def main(message: cl.Message):
-    """
-    ChainLit provides a web GUI for this application.
-
-    See https://docs.chainlit.io/integrations/llama-index.
-
-    Usage:
-
-    ```shell
-    chainlit run main.py -w
-    ```
-    """
+async def handle_message_from_user(message: cl.Message):
     agent: AgentRunner = cl.user_session.get("agent")
     # The Chainlit doc recommends using `await cl.make_async(agent.chat)(message.content)` instead:
     # > The make_async function takes a synchronous function (for instance a LangChain agent) and returns an
