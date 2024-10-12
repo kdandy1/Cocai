@@ -42,6 +42,8 @@ if SHOULD_USE_PHOENIX:
 
 SHOULD_USE_RICH = True
 
+SHOULD_PERSIST_CHAT_STORE = False
+
 # https://rich.readthedocs.io/en/latest/logging.html#handle-exceptions
 logging.basicConfig(
     # This can get really verbose if set to `logging.DEBUG`.
@@ -70,11 +72,14 @@ if SHOULD_USE_RICH:
         f"The global traceback handler has been swapped from {old_traceback_handler} to {sys.excepthook}."
     )
 
-# https://docs.llamaindex.ai/en/stable/module_guides/storing/chat_stores/#simplechatstore
-try:
-    chat_store = SimpleChatStore.from_persist_path(persist_path="chat_store.json")
-except Exception as e:
-    logger.warning(f"Failed to load chat store from file: {e}, using a new one.")
+if SHOULD_PERSIST_CHAT_STORE:
+    # https://docs.llamaindex.ai/en/stable/module_guides/storing/chat_stores/#simplechatstore
+    try:
+        chat_store = SimpleChatStore.from_persist_path(persist_path="chat_store.json")
+    except Exception as e:
+        logger.warning(f"Failed to load chat store from file: {e}, using a new one.")
+        chat_store = SimpleChatStore()
+else:
     chat_store = SimpleChatStore()
 chat_memory = ChatMemoryBuffer.from_defaults(
     chat_store=chat_store,
@@ -228,7 +233,8 @@ async def factory():
 @cl.on_chat_end
 async def cleanup():
     logger.warning("Interrupted. Persisting chat storage.")
-    chat_store.persist(persist_path="chat_store.json")
+    if SHOULD_PERSIST_CHAT_STORE:
+        chat_store.persist(persist_path="chat_store.json")
 
 
 @cl.on_message
