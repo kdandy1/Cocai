@@ -74,7 +74,7 @@ def create_callback_manager() -> CallbackManager:
     return CallbackManager(callback_handlers)
 
 
-def set_up_llama_index(should_use_chainlit: bool, max_action_steps: int = 5):
+def set_up_llama_index(max_action_steps: int = 5):
     """
     One-time setup code for shared objects across all AgentRunners.
     """
@@ -101,6 +101,7 @@ def set_up_llama_index(should_use_chainlit: bool, max_action_steps: int = 5):
         Settings.llm = OpenAILike(
             model="meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
             api_base="https://api.together.xyz/v1",
+            temperature=0.1,
             api_key=api_key,
             is_function_calling_model=True,
             is_chat_model=True,
@@ -164,7 +165,7 @@ def set_up_llama_index(should_use_chainlit: bool, max_action_steps: int = 5):
     return all_tools, my_system_prompt
 
 
-all_tools, my_system_prompt = set_up_llama_index(should_use_chainlit=False)
+all_tools, my_system_prompt = set_up_llama_index()
 
 
 @cl.set_starters
