@@ -11,6 +11,13 @@ from sqlalchemy import create_engine, text
 
 class MinioStorageClient(BaseStorageClient):
     """
+    Copied from https://github.com/rongfengliang/chainlit-pg-learning/blob/9e9da095cc0bd447dfcb59504a835b69cef9cf3f/minio.py#L6.
+
+    Original author:
+    - https://github.com/rongfengliang
+    - 1141591465@qq.com
+    - cnblogs.com/rongfengliang
+
     Class to enable MinIO storage provider
 
     params:
