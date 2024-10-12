@@ -59,6 +59,13 @@ You'll need it in Markdown format, though. If you can only find the PDF edition,
 
 ### Running the Chatbot
 
+If you are not providing a environment variable `OPENAI_API_KEY` for the OpenAI API key, ensure that you have an Ollama server running at `http://localhost:11434/v1`:
+
+```shell
+ollama serve
+```
+
+
 You can start the chatbot by running:
 
 ```shell
@@ -66,3 +73,9 @@ just serve
 ```
 
 Then, navigate to `http://localhost:8000/chat/` in your browser.
+
+To enable your AI Keeper to draw illustrations, run a "Stable Diffusion web UI" server with API support turned on:
+
+```shell
+./webui.sh --api
+```

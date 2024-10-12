@@ -26,6 +26,7 @@ from my_monkey_patch import ChainlitCallbackHandler
 from tools import (
     ToolForConsultingTheModule,
     ToolForSuggestingChoices,
+    illustrate_a_scene,
     roll_a_dice,
     roll_a_skill,
     tool_for_creating_character,
@@ -168,6 +169,9 @@ def create_agent(
         ),
         FunctionTool.from_defaults(
             roll_a_skill,
+        ),
+        FunctionTool.from_defaults(
+            illustrate_a_scene,
         ),
         tool_for_creating_character,
     ]
