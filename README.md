@@ -35,19 +35,36 @@ Thanks to the chain-of-thought (CoT) visualization feature, you can unfold the t
 
 ### Pre-requisites
 
-Bring your own large language model (LLM).
-- The easiest (and perhaps highest-quality) way would be to provide an API key to OpenAI. Simply add `OPENAI_API_KEY=sk-...` to a `.env` file in the project root.
-- With the absence of an OpenAI API key, the chatbot will default to using [Ollama](https://ollama.com/download), a program that serves LLMs locally.
-  - Ensure that your local Ollama server has already downloaded the `llama3.1` model. If you haven't (or aren't sure), run `ollama pull llama3.1`.
-  - If you want to use a different model that does not support function-calling, that's also possible. Revert [this commit][tc], so that you can use the ReAct paradigm to simulate function-calling capabilities with a purely semantic approach.
+#### Bring your own large language model (LLM)
+
+The easiest (and perhaps highest-quality) way would be to provide an API key to OpenAI. Simply add `OPENAI_API_KEY=sk-...` to a `.env` file in the project root.
+
+With the absence of an OpenAI API key, the chatbot will default to using [Ollama](https://ollama.com/download), a program that serves LLMs locally.
+- Ensure that your local Ollama server has already downloaded the `llama3.1` model. If you haven't (or aren't sure), run `ollama pull llama3.1`.
+- If you want to use a different model that does not support function-calling, that's also possible. Revert [this commit][tc], so that you can use the ReAct paradigm to simulate function-calling capabilities with a purely semantic approach.
 
 [tc]: https://github.com/StarsRail/Cocai/commit/13d777767d1dd96024021c085247525ec52b79ba
 
-Install [`just`](https://github.com/casey/just), a command runner. I use this because I always tend to forget the exact command to run.
+#### Install programs
 
-Written in Python, this project uses the Rust-based package manager [`uv`](https://docs.astral.sh/uv/). It does not require you to explicitly create a virtual environment.
+These are the binary programs that you need to have ready before running Cocai:
+- Install [`just`](https://github.com/casey/just), a command runner. I use this because I always tend to forget the exact command to run.
+- Written in Python, this project uses the Rust-based package manager [`uv`](https://docs.astral.sh/uv/). It does not require you to explicitly create a virtual environment.
+- Install minIO. It allows Chainlit -- our frontend framework -- to persist data.
+- As aforementioned, if you decide to self-host a LLM, install Ollama.
 
-**Prepare a CoC module**. Unsure which to pick? Start with [_“Clean Up, Aisle Four!”_][a4] by [Dr. Michael C. LaBossiere][mc].
+If you are on macOS, you can install these programs using Homebrew:
+
+```shell
+brew install just uv minio ollama
+```
+
+Optionally, also install [Stable Diffusion Web UI][sdwu]. This allows the chatbot to generate illustrations.
+
+[sdwu]: https://github.com/AUTOMATIC1111/stable-diffusion-webui
+
+#### Prepare a CoC module
+Unsure which to pick? Start with [_“Clean Up, Aisle Four!”_][a4] by [Dr. Michael C. LaBossiere][mc].
 You'll need it in Markdown format, though. If you can only find the PDF edition, you can:
 1. upload it to Google Drive,
 2. open it with Google Docs,
@@ -57,9 +74,16 @@ You'll need it in Markdown format, though. If you can only find the PDF edition,
 [a4]: https://shadowsofmaine.wordpress.com/wp-content/uploads/2008/03/cleanup.pdf
 [mc]: https://lovecraft.fandom.com/wiki/Michael_LaBossiere
 
+#### Prepare secrets
 
 Run `chainlit create-secret` to generate a JWT token. Follow the instructions to add the secret to `.env`.
 
+Start serving minIO for the first time by running `minio server .minio/`. Then navigate to `http://127.0.0.1:57393/access-keys` and create a new access key. Add the access key and secret key to `.env`:
+
+```toml
+MINIO_ACCESS_KEY="foo"
+MINIO_SECRET_KEY="bar"
+```
 
 
 ### Running the Chatbot
