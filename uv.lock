@@ -264,14 +264,14 @@ wheels = [
 
 [[package]]
 name = "asyncer"
-version = "0.0.2"
+version = "0.0.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/72/fc/de575dfcb41355123d20c492a46bccbe3613f92b7283818c35698543abb3/asyncer-0.0.2.tar.gz", hash = "sha256:d546c85f3626ebbaf06bb4395db49761c902a61a6ac802b1a74133cab4f7f433", size = 8814 }
+sdist = { url = "https://files.pythonhosted.org/packages/39/29/245ba9fa5769a1e3226c1157aedb372fe9dab28c4e1dcf6911d84d3a5e04/asyncer-0.0.7.tar.gz", hash = "sha256:d5e563fb0f56eb87b97257984703658a4f5bbdb52ff851b3e8ed864cc200b1d2", size = 14437 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/01/61/92a12d4a53f4b88178c36209188ba2478ca51862210edb5d22c9236a9c34/asyncer-0.0.2-py3-none-any.whl", hash = "sha256:46e0e1423ce21588350ad425875e81795280b9e1f517e8a389de940b86c348bd", size = 8298 },
+    { url = "https://files.pythonhosted.org/packages/3e/4b/40a1dc52fc26695b1e80a9e67dfb0fe7e6ddc57bbc5b61348e40c0045abb/asyncer-0.0.7-py3-none-any.whl", hash = "sha256:f0d579d4f67c4ead52ede3a45c854f462cae569058a8a6a68a4ebccac1c335d8", size = 8476 },
 ]
 
 [[package]]
@@ -324,7 +324,7 @@ wheels = [
 
 [[package]]
 name = "chainlit"
-version = "1.1.402"
+version = "2.0.dev0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiofiles" },
@@ -351,9 +351,9 @@ dependencies = [
     { name = "uvicorn" },
     { name = "watchfiles" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ef/23/93aafbd46751958475aaef8c4e2bfbcd7448f6311d248174aa942f475b59/chainlit-1.1.402.tar.gz", hash = "sha256:a3bad14afd6c7f1a50dc085521d09109ed6b5f4c44b7cb861746e6731333e7b4", size = 4237530 }
+sdist = { url = "https://files.pythonhosted.org/packages/d8/51/51db5fbfb66463d8174a9df4f3b235f55ac224e7a391f2094dc50bcb9b5c/chainlit-2.0.dev0.tar.gz", hash = "sha256:6e87d8df463f081dd80604704018220aacd85234afe0586e3a5dc5a109622773", size = 4293045 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f8/db/ed38770febc1355441dad14137b4f06cd7f81f5bda48411a614f6a3c85b5/chainlit-1.1.402-py3-none-any.whl", hash = "sha256:f3d16cdb36a0c8724693806f39995ce66cf02cf45d0af741216a49933127cc3a", size = 4288125 },
+    { url = "https://files.pythonhosted.org/packages/fa/a6/33f8db7694d4223ecc1b34a0b8303bb1a0021df248168d7ec73317861bb1/chainlit-2.0.dev0-py3-none-any.whl", hash = "sha256:c5698ec071f1674335f35d13757b73a9a64477dac0027d5ee8dd02eba6f011a9", size = 4349504 },
 ]
 
 [[package]]
@@ -436,6 +436,7 @@ name = "cocai"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "aiosqlite" },
     { name = "arize-phoenix" },
     { name = "chainlit" },
     { name = "cochar" },
@@ -453,8 +454,9 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "aiosqlite", specifier = ">=0.20.0" },
     { name = "arize-phoenix", specifier = ">=4.32.0" },
-    { name = "chainlit", specifier = ">=1.1.402" },
+    { name = "chainlit", specifier = ">=1.3.0rc0" },
     { name = "cochar", specifier = ">=1.0.1" },
     { name = "llama-index", specifier = ">=0.5.1" },
     { name = "llama-index-agent-openai", specifier = ">=0.3.0" },
@@ -491,15 +493,15 @@ wheels = [
 
 [[package]]
 name = "dataclasses-json"
-version = "0.5.14"
+version = "0.6.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "marshmallow" },
     { name = "typing-inspect" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/92/30/43b04314b64fbd4562216721bfbf95022922c57e0340809b99f5e049d8ea/dataclasses_json-0.5.14.tar.gz", hash = "sha256:d82896a94c992ffaf689cd1fafc180164e2abdd415b8f94a7f78586af5886236", size = 29334 }
+sdist = { url = "https://files.pythonhosted.org/packages/64/a4/f71d9cf3a5ac257c993b5ca3f93df5f7fb395c725e7f1e6479d2514173c3/dataclasses_json-0.6.7.tar.gz", hash = "sha256:b6b3e528266ea45b9535223bc53ca645f5208833c29229e847b3f26a1cc55fc0", size = 32227 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/97/5f/e7cc90f36152810cab08b6c9c1125e8bcb9d76f8b3018d101b5f877b386c/dataclasses_json-0.5.14-py3-none-any.whl", hash = "sha256:5ec6fed642adb1dbdb4182badb01e0861badfd8fda82e3b67f44b2d1e9d10d21", size = 26297 },
+    { url = "https://files.pythonhosted.org/packages/c3/be/d0d44e092656fe7a06b55e6103cbce807cdbdee17884a5367c68c9860853/dataclasses_json-0.6.7-py3-none-any.whl", hash = "sha256:0dbf33f26c8d5305befd61b39d2b3414e8a407bedc2834dea9b8d642666fb40a", size = 28686 },
 ]
 
 [[package]]
@@ -923,7 +925,7 @@ wheels = [
 
 [[package]]
 name = "literalai"
-version = "0.0.607"
+version = "0.0.623"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "chevron" },
@@ -931,7 +933,7 @@ dependencies = [
     { name = "packaging" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/33/ae/6d0bd2b2945b6ab19117d54835aed20d4d306d45e8ebc5900ec2d555da43/literalai-0.0.607.tar.gz", hash = "sha256:783c495d9fb2ae9f84e5877ecb34587f6a6ac0224d9f0936336dbc8b6765b30d", size = 49663 }
+sdist = { url = "https://files.pythonhosted.org/packages/41/af/07d943e62a1297a7b44777297c0dca8f4bfcd6ae18b9df7d3cd9c1970e29/literalai-0.0.623.tar.gz", hash = "sha256:d65c04dde6b1e99d585e4112a607e5fd574d282b70f600c55a671018340dfb0f", size = 57081 }
 
 [[package]]
 name = "llama-cloud"

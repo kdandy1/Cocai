@@ -31,6 +31,7 @@ from tools import (
     roll_a_skill,
     tool_for_creating_character,
 )
+from utils import set_up_data_layer
 
 console = Console()
 
@@ -81,10 +82,18 @@ if SHOULD_PERSIST_CHAT_STORE:
         chat_store = SimpleChatStore()
 else:
     chat_store = SimpleChatStore()
-chat_memory = ChatMemoryBuffer.from_defaults(
-    chat_store=chat_store,
-    chat_store_key="user1",
-)
+
+set_up_data_layer()
+
+
+@cl.password_auth_callback
+def auth_callback(username: str, password: str):
+    # Fetch the user matching username from your database
+    # and compare the hashed password with the value stored in the database
+    if (username, password) == ("admin", "admin"):
+        return cl.User(identifier="admin", metadata={"role": "admin"})
+    else:
+        return None
 
 
 def create_callback_manager(should_use_chainlit: bool = True) -> CallbackManager:
@@ -194,7 +203,6 @@ def create_agent(
         verbose=True,
         # x2: An observation step also takes as an iteration.
         # +1: The final output reasoning step needs to take a spot.
-        memory=chat_memory,
     )
     return agent
 
@@ -251,6 +259,11 @@ async def main(message: cl.Message):
     ```
     """
     agent: AgentRunner = cl.user_session.get("agent")
+    app_user = cl.user_session.get("user").identifier or "guest"
+    chat_memory = ChatMemoryBuffer.from_defaults(
+        chat_store=chat_store,
+        chat_store_key=app_user,
+    )
     # The Chainlit doc recommends using `await cl.make_async(agent.chat)(message.content)` instead:
     # > The make_async function takes a synchronous function (for instance a LangChain agent) and returns an
     # > asynchronous function that will run the original function in a separate thread. This is useful to run
@@ -258,7 +271,9 @@ async def main(message: cl.Message):
     # (https://docs.chainlit.io/api-reference/make-async#make-async)
     # I thought we can just use `agent.achat` directly, but it would cause `<ContextVar name='chainlit' at 0x...>`.
     # TODO: streaming seems broken. Why?
-    response = await cl.make_async(agent.chat)(message.content)
+    response = await cl.make_async(agent.chat)(
+        message.content, chat_history=chat_memory.get_all()
+    )
     response_message = cl.Message(content="")
     response_message.content = response.response
     await response_message.send()

@@ -57,6 +57,9 @@ You'll need it in Markdown format, though. If you can only find the PDF edition,
 [a4]: https://shadowsofmaine.wordpress.com/wp-content/uploads/2008/03/cleanup.pdf
 [mc]: https://lovecraft.fandom.com/wiki/Michael_LaBossiere
 
+
+Run `chainlit create-secret` to generate a JWT token. Follow the instructions to add the secret to `.env`.
+
 ### Running the Chatbot
 
 If you are not providing a environment variable `OPENAI_API_KEY` for the OpenAI API key, ensure that you have an Ollama server running at `http://localhost:11434/v1`:
