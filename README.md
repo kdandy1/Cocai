@@ -120,4 +120,4 @@ just serve
 just serve-all
 ```
 
-Then, navigate to `http://localhost:8000/chat/` in your browser.
+Then, navigate to `http://localhost:8000/chat/` in your browser. Log in with the dummy credentials `admin` and `admin`.
