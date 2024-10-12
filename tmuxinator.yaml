@@ -1,0 +1,11 @@
+name: cocai
+root: .
+enable_pane_titles: true
+windows:
+  - main:
+      layout: main-vertical
+      panes:
+        - just serve
+        - ollama serve
+        - cd ../stable-diffusion-webui; ./webui.sh --api --nowebui
+        - minio server .minio/

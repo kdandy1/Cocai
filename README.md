@@ -106,12 +106,18 @@ Optionally, to enable your AI Keeper to draw illustrations, run a "Stable Diffus
 ./webui.sh --api
 ```
 
-If Stable Diffision is not running, the AI Keeper will still be able to generate text-based responses. It's just that it won't be able to draw illustrations.
+If Stable Diffusion is not running, the AI Keeper will still be able to generate text-based responses. It's just that it won't be able to draw illustrations.
 
 You can start the chatbot by running:
 
 ```shell
 just serve
+```
+
+**Want to start all of the above in one go?** Ensure that you have `tmuxinator` and `tmux` installed, and then run:
+
+```shell
+just serve-all
 ```
 
 Then, navigate to `http://localhost:8000/chat/` in your browser.
