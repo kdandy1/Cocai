@@ -85,6 +85,9 @@ def create_callback_manager(should_use_chainlit: bool = True) -> CallbackManager
 
 
 def set_up_llama_index(should_use_chainlit: bool, max_action_steps: int = 5):
+    """
+    One-time setup code for shared objects across all AgentRunners.
+    """
     # Needed for "Retrieved the following sources" to show up on Chainlit.
     Settings.callback_manager = create_callback_manager(should_use_chainlit)
     # ============= Beginning of the code block for wiring on to models. =============
