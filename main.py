@@ -94,7 +94,7 @@ def set_up_llama_index(max_action_steps: int = 5):
             is_function_calling_model=True,
             is_chat_model=True,
         )
-    if api_key := os.environ.get("TOGETHER_AI_API_KEY", None):
+    elif api_key := os.environ.get("TOGETHER_AI_API_KEY", None):
         logger.info("Using Together AI API.")
         from llama_index.llms.openai_like import OpenAILike
 
@@ -106,7 +106,6 @@ def set_up_llama_index(max_action_steps: int = 5):
             is_function_calling_model=True,
             is_chat_model=True,
         )
-
     else:
         logger.info("Using Ollama's OpenAI-compatible API.")
         from llama_index.llms.openai_like import OpenAILike
