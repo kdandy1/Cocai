@@ -154,7 +154,7 @@ def roll_a_dice(
     """
     Roll an n-faced dice and return the result.
     """
-    return random.randint(1, n)
+    return random.randint(1, int(n))
 
 
 class DegreesOfSuccess(IntEnum):
