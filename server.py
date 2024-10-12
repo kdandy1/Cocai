@@ -7,6 +7,9 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from jinja2 import Template
 
+from utils import set_up_logging
+
+set_up_logging()
 app = FastAPI()
 
 

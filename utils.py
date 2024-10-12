@@ -1,4 +1,6 @@
+import logging
 import os
+import sys
 from typing import Any, Dict, Union
 
 import boto3
@@ -6,6 +8,12 @@ import chainlit.data as cl_data
 from chainlit.data.base import BaseStorageClient
 from chainlit.data.sql_alchemy import SQLAlchemyDataLayer
 from chainlit.logger import logger
+
+# If Python’s builtin readline module is previously loaded, elaborate line editing and history features will be available.
+# https://rich.readthedocs.io/en/stable/console.html#input
+from rich.console import Console
+from rich.logging import RichHandler
+from rich.traceback import install
 from sqlalchemy import create_engine, text
 
 
@@ -93,3 +101,34 @@ def set_up_data_layer(sqlite_file_path: str = ".chainlit/data.db"):
         conninfo=f"sqlite+aiosqlite:///{sqlite_file_path}",  # https://stackoverflow.com/a/72334692/27163563,
         storage_provider=storage_client,
     )
+
+
+def set_up_logging(should_use_rich: bool = True):
+    console = Console()
+    # https://rich.readthedocs.io/en/latest/logging.html#handle-exceptions
+    logging.basicConfig(
+        # This can get really verbose if set to `logging.DEBUG`.
+        level=logging.INFO,
+        format="%(message)s",
+        datefmt="[%X]",
+        handlers=[
+            (
+                RichHandler(rich_tracebacks=True, console=console)
+                if should_use_rich
+                else logging.StreamHandler()
+            )
+        ],
+        # This function does nothing if the root logger already has handlers configured,
+        # unless the keyword argument force is set to True.
+        # https://docs.python.org/3/library/logging.html#logging.basicConfig
+        force=True,
+    )
+    logger = logging.getLogger(__name__)
+
+    if should_use_rich:
+        # https://rich.readthedocs.io/en/stable/traceback.html#traceback-handler
+        logger.debug("Installing rich traceback handler.")
+        old_traceback_handler = install(show_locals=True, console=console)
+        logger.debug(
+            f"The global traceback handler has been swapped from {old_traceback_handler} to {sys.excepthook}."
+        )

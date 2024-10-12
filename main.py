@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import logging
 import os
-import sys
 
 import chainlit as cl
 import phoenix as px
@@ -16,12 +15,6 @@ from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.tools.tavily_research import TavilyToolSpec
 from phoenix.trace.llama_index import OpenInferenceTraceCallbackHandler
 
-# If Python’s builtin readline module is previously loaded, elaborate line editing and history features will be available.
-# https://rich.readthedocs.io/en/stable/console.html#input
-from rich.console import Console
-from rich.logging import RichHandler
-from rich.traceback import install
-
 from my_monkey_patch import ChainlitCallbackHandler
 from tools import (
     ToolForConsultingTheModule,
@@ -33,45 +26,14 @@ from tools import (
 )
 from utils import set_up_data_layer
 
-console = Console()
-
 SHOULD_USE_PHOENIX = True
 # "Phoenix can display in real time the traces automatically collected from your LlamaIndex application."
 # https://docs.llamaindex.ai/en/stable/module_guides/observability/observability.html
 if SHOULD_USE_PHOENIX:
     px.launch_app()
 
-SHOULD_USE_RICH = True
-
 SHOULD_PERSIST_CHAT_STORE = False
-
-# https://rich.readthedocs.io/en/latest/logging.html#handle-exceptions
-logging.basicConfig(
-    # This can get really verbose if set to `logging.DEBUG`.
-    level=logging.INFO,
-    format="%(message)s",
-    datefmt="[%X]",
-    handlers=[
-        (
-            RichHandler(rich_tracebacks=True, console=console)
-            if SHOULD_USE_RICH
-            else logging.StreamHandler()
-        )
-    ],
-    # This function does nothing if the root logger already has handlers configured,
-    # unless the keyword argument force is set to True.
-    # https://docs.python.org/3/library/logging.html#logging.basicConfig
-    force=True,
-)
 logger = logging.getLogger(__name__)
-
-if SHOULD_USE_RICH:
-    # https://rich.readthedocs.io/en/stable/traceback.html#traceback-handler
-    logger.debug("Installing rich traceback handler.")
-    old_traceback_handler = install(show_locals=True, console=console)
-    logger.debug(
-        f"The global traceback handler has been swapped from {old_traceback_handler} to {sys.excepthook}."
-    )
 
 if SHOULD_PERSIST_CHAT_STORE:
     # https://docs.llamaindex.ai/en/stable/module_guides/storing/chat_stores/#simplechatstore
@@ -240,8 +202,9 @@ async def factory():
 
 @cl.on_chat_end
 async def cleanup():
-    logger.warning("Interrupted. Persisting chat storage.")
+    logger = logging.getLogger("on-chat-end")
     if SHOULD_PERSIST_CHAT_STORE:
+        logger.warning("Interrupted. Persisting chat storage.")
         chat_store.persist(persist_path="chat_store.json")
 
 
