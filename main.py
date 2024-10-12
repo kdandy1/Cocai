@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import logging
 import os
-from typing import List
 
 import chainlit as cl
 import phoenix as px
@@ -11,7 +10,7 @@ from llama_index.core.agent import AgentRunner
 from llama_index.core.callbacks import CallbackManager, LlamaDebugHandler
 from llama_index.core.memory import ChatMemoryBuffer
 from llama_index.core.storage.chat_store import SimpleChatStore
-from llama_index.core.tools import BaseTool, FunctionTool
+from llama_index.core.tools import FunctionTool
 from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.tools.tavily_research import TavilyToolSpec
 from phoenix.trace.llama_index import OpenInferenceTraceCallbackHandler
@@ -163,24 +162,6 @@ def set_up_llama_index(should_use_chainlit: bool, max_action_steps: int = 5):
 all_tools, my_system_prompt = set_up_llama_index(should_use_chainlit=False)
 
 
-def create_agent(
-    all_tools: List[BaseTool], my_system_prompt: str, chat_store_key: str
-) -> AgentRunner:
-    chat_memory = ChatMemoryBuffer.from_defaults(
-        chat_store=chat_store,
-        chat_store_key=chat_store_key,
-    )
-    agent = OpenAIAgent.from_tools(
-        system_prompt=my_system_prompt,
-        tools=all_tools,
-        verbose=True,
-        # x2: An observation step also takes as an iteration.
-        # +1: The final output reasoning step needs to take a spot.
-        memory=chat_memory,
-    )
-    return agent
-
-
 @cl.set_starters
 async def set_starters():
     return [
@@ -209,11 +190,23 @@ async def set_starters():
 
 @cl.on_chat_start
 async def factory():
+    # Each chat session should have his own agent runner, because each chat session has different chat histories.
+    key = cl.user_session.get("id")
+    chat_memory = ChatMemoryBuffer.from_defaults(
+        chat_store=chat_store,
+        chat_store_key=key,
+    )
+    agent_runner = OpenAIAgent.from_tools(
+        system_prompt=my_system_prompt,
+        tools=all_tools,
+        verbose=True,
+        # x2: An observation step also takes as an iteration.
+        # +1: The final output reasoning step needs to take a spot.
+        memory=chat_memory,
+    )
     cl.user_session.set(
         "agent",
-        create_agent(
-            all_tools, my_system_prompt, chat_store_key=cl.user_session.get("id")
-        ),
+        agent_runner,
     )
 
 
