@@ -1,4 +1,4 @@
-chat_store.json
+.chainlit/data.db
 
 chroma_db/
 llamaIndex_storage/
