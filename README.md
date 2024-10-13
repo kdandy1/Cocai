@@ -37,6 +37,20 @@ Thanks to the chain-of-thought (CoT) visualization feature, you can unfold the t
 
 ### Pre-requisites
 
+#### Self-serve an embedding model
+
+Ensure that you have a local Ollama server running:
+
+```shell
+ollama serve
+```
+
+and then:
+
+```shell
+ollama pull nomic-embed-text
+```
+
 #### Bring your own large language model (LLM)
 
 The easiest (and perhaps highest-quality) way would be to provide an API key to OpenAI. Simply add `OPENAI_API_KEY=sk-...` to a `.env` file in the project root.
@@ -90,7 +104,7 @@ MINIO_SECRET_KEY="bar"
 
 ### Running the Chatbot
 
-If you are not providing a environment variable `OPENAI_API_KEY` for the OpenAI API key, ensure that you have an Ollama server running at `http://localhost:11434/v1`:
+In a terminal, start serving Ollama at `http://localhost:11434/v1`:
 
 ```shell
 ollama serve
