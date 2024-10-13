@@ -5,8 +5,10 @@ windows:
   - main:
       layout: main-vertical
       panes:
-        - just serve
+        - uv run uvicorn server:app --host 0.0.0.0 --port 8000
         - ollama serve
-        - cd ../stable-diffusion-webui; ./webui.sh --api --nowebui --port 7860
+        - stable-diffusion:
+          - cd ../stable-diffusion-webui
+          - ./webui.sh --api --nowebui --port 7860
         - minio server .minio/
         - uv run phoenix serve
