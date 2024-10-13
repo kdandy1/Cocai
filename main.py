@@ -99,7 +99,7 @@ def set_up_llama_index(max_action_steps: int = 5):
         from llama_index.llms.openai_like import OpenAILike
 
         Settings.llm = OpenAILike(
-            model="meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+            model="meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
             api_base="https://api.together.xyz/v1",
             api_key=api_key,
             is_function_calling_model=True,
@@ -186,7 +186,7 @@ async def set_starters():
         ),
         cl.Starter(
             label="What's the story background?",
-            message="Briefly describe the story background of the module we are playing today.",
+            message="According to the game module, what's the background of the story?",
             icon="/public/avatars/consult_the_game_module.png",
         ),
     ]
