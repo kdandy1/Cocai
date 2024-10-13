@@ -6,7 +6,9 @@
 
 A chatbot that plays Call of Cthulhu (CoC) with you, powered by AI.
 
-<img width="2317" alt="image" src="https://github.com/user-attachments/assets/4617c031-72f3-4915-8582-fd8700b0f725">
+<img width="866" alt="image" src="https://github.com/user-attachments/assets/59b159f8-ace5-4df0-bb4a-a33dff190d99">
+
+[Video demo](https://www.youtube.com/watch?v=8wagQoMPOKY)
 
 _(Logo by [@Norod78](https://linktr.ee/Norod78), originally [published on Civitai](https://civitai.com/images/1231343))_
 
