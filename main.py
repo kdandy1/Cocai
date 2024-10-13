@@ -101,7 +101,6 @@ def set_up_llama_index(max_action_steps: int = 5):
         Settings.llm = OpenAILike(
             model="meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
             api_base="https://api.together.xyz/v1",
-            temperature=0.1,
             api_key=api_key,
             is_function_calling_model=True,
             is_chat_model=True,
