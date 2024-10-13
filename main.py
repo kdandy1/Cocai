@@ -3,7 +3,6 @@ import logging
 import os
 
 import chainlit as cl
-import phoenix as px
 from llama_index.agent.openai import OpenAIAgent
 from llama_index.core import Settings
 from llama_index.core.agent import AgentRunner
@@ -13,7 +12,8 @@ from llama_index.core.storage.chat_store import SimpleChatStore
 from llama_index.core.tools import FunctionTool
 from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.tools.tavily_research import TavilyToolSpec
-from phoenix.trace.llama_index import OpenInferenceTraceCallbackHandler
+from openinference.instrumentation.llama_index import LlamaIndexInstrumentor
+from phoenix.otel import register
 
 from tools import (
     ToolForConsultingTheModule,
@@ -25,12 +25,6 @@ from tools import (
 )
 from utils import set_up_data_layer
 
-SHOULD_USE_PHOENIX = True
-# "Phoenix can display in real time the traces automatically collected from your LlamaIndex application."
-# https://docs.llamaindex.ai/en/stable/module_guides/observability/observability.html
-if SHOULD_USE_PHOENIX:
-    px.launch_app()
-
 logger = logging.getLogger(__name__)
 
 # This object holds all chat histories that occur throughout the current LlamaIndex process.
@@ -41,6 +35,11 @@ logger = logging.getLogger(__name__)
 chat_store = SimpleChatStore()
 
 set_up_data_layer()
+
+# "Phoenix can display in real time the traces automatically collected from your LlamaIndex application."
+# https://docs.llamaindex.ai/en/stable/module_guides/observability/observability.html
+tracer_provider = register()
+LlamaIndexInstrumentor().instrument(tracer_provider=tracer_provider)
 
 
 @cl.password_auth_callback
@@ -68,8 +67,6 @@ def create_callback_manager() -> CallbackManager:
     callback_handlers = [
         LlamaDebugHandler(logger=debug_logger),
     ]
-    if SHOULD_USE_PHOENIX:
-        callback_handlers.append(OpenInferenceTraceCallbackHandler())
     callback_handlers.append(cl.LlamaIndexCallbackHandler())
     return CallbackManager(callback_handlers)
 
