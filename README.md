@@ -96,6 +96,13 @@ If you are not providing a environment variable `OPENAI_API_KEY` for the OpenAI 
 ollama serve
 ```
 
+
+In another terminal, start serving Phoenix:
+
+```shell
+uv run phoenix serve
+```
+
 In another terminal, start serving minIO:
 
 ```shell

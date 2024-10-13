@@ -9,3 +9,4 @@ windows:
         - ollama serve
         - cd ../stable-diffusion-webui; ./webui.sh --api --nowebui --port 7860
         - minio server .minio/
+        - uv run phoenix serve
