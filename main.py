@@ -13,7 +13,6 @@ from llama_index.core.tools import FunctionTool
 from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.tools.tavily_research import TavilyToolSpec
 from openinference.instrumentation.llama_index import LlamaIndexInstrumentor
-from phoenix.otel import register
 
 from tools import (
     ToolForConsultingTheModule,
@@ -36,10 +35,15 @@ chat_store = SimpleChatStore()
 
 set_up_data_layer()
 
-# "Phoenix can display in real time the traces automatically collected from your LlamaIndex application."
-# https://docs.llamaindex.ai/en/stable/module_guides/observability/observability.html
-tracer_provider = register()
-LlamaIndexInstrumentor().instrument(tracer_provider=tracer_provider)
+try:
+    # "Phoenix can display in real time the traces automatically collected from your LlamaIndex application."
+    # https://docs.llamaindex.ai/en/stable/module_guides/observability/observability.html
+    from phoenix.otel import register
+
+    tracer_provider = register()
+    LlamaIndexInstrumentor().instrument(tracer_provider=tracer_provider)
+except Exception as e:
+    logger.warn(f"Failed to register Phoenix OpenTelemetry instrumentation: {e}")
 
 
 @cl.password_auth_callback
