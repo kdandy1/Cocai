@@ -175,13 +175,13 @@ docker run -p 6006:6006 -p 4317:4317 -i -t arizephoenix/phoenix:latest
 
 # License
 
-The software itself is licensed under AGPL-3.0.
+🧑‍💻 The software itself is licensed under AGPL-3.0.
 
-The default CoC module, [_“Clean Up, Aisle Four!”_][a4] is written by [Dr. Michael C. LaBossiere][mc]. All rights reserved to the original author. Adopted here with permission.
+📒 The default CoC module, [_“Clean Up, Aisle Four!”_][a4] is written by [Dr. Michael C. LaBossiere][mc]. All rights reserved to the original author. Adopted here with permission.
 
 (A "CoC module" is also known as a CoC scenario, campaign, or adventure. It comes in the form of a booklet. Some CoC modules come with their own rulebooks. Since this project is just between the user and the chatbot, let's choose a single-player module.)
 
 [a4]: https://shadowsofmaine.wordpress.com/wp-content/uploads/2008/03/cleanup.pdf
 [mc]: https://lovecraft.fandom.com/wiki/Michael_LaBossiere
 
-Logo is an AI-generated artwork by [@Norod78](https://linktr.ee/Norod78), originally [published on Civitai](https://civitai.com/images/1231343)). Adopted here with permission.
+🎨 Logo is an AI-generated artwork by [@Norod78](https://linktr.ee/Norod78), originally [published on Civitai](https://civitai.com/images/1231343)). Adopted here with permission.
