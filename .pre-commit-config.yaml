@@ -49,7 +49,10 @@ repos:
       args: [ --fix ]
     - id: ruff-format
       name: "Format code with Ruff"
-- repo: https://github.com/standard/standard
-  rev: v17.1.2
-  hooks:
-    - id: standard
+# I'm seeing "Library not loaded: /opt/homebrew/opt/icu4c/lib/libicui18n.74.dylib" error.
+# Seems that this hook relies on version 74 of icu4c, but other software I use relies on a newer version (76).
+# TODO: Re-enable this hook when the issue is resolved.
+#- repo: https://github.com/standard/standard
+#  rev: v17.1.2
+#  hooks:
+#    - id: standard
