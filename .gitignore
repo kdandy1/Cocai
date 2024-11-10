@@ -2,7 +2,6 @@
 
 chroma_db/
 llamaIndex_storage/
-game_modules/
 .files/
 .minio/
 

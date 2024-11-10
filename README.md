@@ -10,8 +10,6 @@ A chatbot that plays Call of Cthulhu (CoC) with you, powered by AI.
 
 [Video demo](https://www.youtube.com/watch?v=8wagQoMPOKY)
 
-_(Logo by [@Norod78](https://linktr.ee/Norod78), originally [published on Civitai](https://civitai.com/images/1231343))_
-
 ## Demo
 
 Check out this transcript:
@@ -43,8 +41,7 @@ There are a couple of things you have to do manually before you can start using 
 2. **Install the required binary, standalone programs**. These are not Python packages, so they aren't managed by `pyproject.toml`.
 3. **Self-serve a text embedding model**. This model "translates" your text into numbers, so that the computer can understand you.
 4. **Choose a way to serve a large language model (LLM)**. You can either use OpenAI's API or self-host a local LLM with Ollama.
-5. **Prepare a CoC module**. A "CoC module" is also known as a CoC scenario, campaign, or adventure. It comes in the form of a booklet. Some CoC modules come with their own rulebooks. Since this project is just between the user and the chatbot, let's choose a single-player module.
-6. **Initialize secrets**.
+5. **Initialize secrets**.
 
 No need to explicitly install Python packages. `uv`, the package manager of our choice, will implicitly install the required packages when you boot up the chatbot for the first time.
 
@@ -90,17 +87,6 @@ With the absence of an OpenAI API key, the chatbot will default to using [Ollama
 - If you want to use a different model that does not support function-calling, that's also possible. Revert [this commit][tc], so that you can use the ReAct paradigm to simulate function-calling capabilities with a purely semantic approach.
 
 [tc]: https://github.com/StarsRail/Cocai/commit/13d777767d1dd96024021c085247525ec52b79ba
-
-#### Prepare a CoC module
-Unsure which to pick? Start with [_“Clean Up, Aisle Four!”_][a4] by [Dr. Michael C. LaBossiere][mc].
-You'll need it in Markdown format, though. If you can only find the PDF edition, you can:
-1. upload it to Google Drive,
-2. open it with Google Docs,
-3. download it as Markdown, and finally
-4. do some cleanings.
-
-[a4]: https://shadowsofmaine.wordpress.com/wp-content/uploads/2008/03/cleanup.pdf
-[mc]: https://lovecraft.fandom.com/wiki/Michael_LaBossiere
 
 #### Prepare secrets
 
@@ -161,3 +147,16 @@ Then run:
 ```shell
 brew install llvm
 ```
+
+# License
+
+The software itself is licensed under AGPL-3.0.
+
+The default CoC module, [_“Clean Up, Aisle Four!”_][a4] is written by [Dr. Michael C. LaBossiere][mc]. All rights reserved to the original author. Adopted here with permission.
+
+(A "CoC module" is also known as a CoC scenario, campaign, or adventure. It comes in the form of a booklet. Some CoC modules come with their own rulebooks. Since this project is just between the user and the chatbot, let's choose a single-player module.)
+
+[a4]: https://shadowsofmaine.wordpress.com/wp-content/uploads/2008/03/cleanup.pdf
+[mc]: https://lovecraft.fandom.com/wiki/Michael_LaBossiere
+
+Logo is an AI-generated artwork by [@Norod78](https://linktr.ee/Norod78), originally [published on Civitai](https://civitai.com/images/1231343)). Adopted here with permission.
