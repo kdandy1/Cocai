@@ -55,11 +55,12 @@ These are the binary programs that you need to have ready before running Cocai:
 - Written in Python, this project uses the Rust-based package manager [`uv`](https://docs.astral.sh/uv/). It does not require you to explicitly create a virtual environment.
 - Install minIO. It allows Chainlit -- our frontend framework -- to persist data.
 - As aforementioned, if you decide to self-host a LLM, install Ollama.
+- If you ever want to run the chatbot the easy way (discussed later), you'll need `tmuxinator` and `tmux`.
 
 If you are on macOS, you can install these programs using Homebrew:
 
 ```shell
-brew install just uv minio ollama
+brew install just uv minio ollama tmuxinator tmux
 ```
 
 Optionally, also install [Stable Diffusion Web UI][sdwu]. This allows the chatbot to generate illustrations.
@@ -115,47 +116,27 @@ MINIO_SECRET_KEY="bar"
 
 ### Running the Chatbot
 
-In a terminal, start serving Ollama at `http://localhost:11434/v1`:
+There are 2 ways to start the chatbot, the easy way and the hard way.
 
-```shell
-ollama serve
-```
+In the easy way, **simply run `just serve-all`**. This will start all the required standalone programs and the chatbot in one go. Notes:
+* **Use of multiplexer.** To avoid cluttering up your screen, we use a [terminal multiplexer][tmx] (`tmux`), which essentially divides your terminal window into panes, each running a separate program.
+  The panes are defined in the file `tmuxinator.yaml`. [Tmuxinator](https://github.com/tmuxinator/tmuxinator) is a separate program that manages `tmux` sessions declaratively.
+* **Production-oriented**. This `just serve-all` command is also used in our containerized setup, namely `Dockerfile`. For this reason, the commands in `tmuxinator.yaml` are oriented towards production use.
+  For example, the chatbot doesn't listen on file changes to auto-reload itself, which could be a useful feature if you are tweaking the code frequently. If you want to enable auto-reloading:
+  * modify the `tmuxinator.yaml` (but please don't commit to git), or just
+  * run all commands manually (i.e., the hard way).
 
+[tmx]: https://en.wikipedia.org/wiki/Terminal_multiplexer
 
-In another terminal, start serving Phoenix:
+In the hard way, you want to create a separate terminal for each command:
+1. Start serving **Ollama** (for locally inferencing embedding & language models) by running `ollama serve`. It should be listening at `http://localhost:11434/v1`.
+2. Start serving **minIO** (for persisting data for our web frontend) by running `minio server .minio/`.
+3. Start serving **Phoenix** (for debugging thought chains) by running `uv run phoenix serve`.
+4. Optionally, to enable your AI Keeper to draw illustrations, start serving a "**Stable Diffusion web UI**" server with API support turned on by running `cd ../stable-diffusion-webui; ./webui.sh --api --nowebui --port 7860`.
+  If Stable Diffusion is not running, the AI Keeper will still be able to generate text-based responses. It's just that it won't be able to draw illustrations.
+5. Finally, start serving the **chatbot** by running `just serve`.
 
-```shell
-uv run phoenix serve
-```
-
-In another terminal, start serving minIO:
-
-```shell
-minio server .minio/
-```
-
-Optionally, to enable your AI Keeper to draw illustrations, run a "Stable Diffusion web UI" server with API support turned on:
-
-```shell
-cd ../stable-diffusion-webui
-./webui.sh --api --nowebui --port 7860
-```
-
-If Stable Diffusion is not running, the AI Keeper will still be able to generate text-based responses. It's just that it won't be able to draw illustrations.
-
-You can start the chatbot by running:
-
-```shell
-just serve
-```
-
-**Want to start all of the above in one go?** Ensure that you have `tmuxinator` and `tmux` installed, and then run:
-
-```shell
-just serve-all
-```
-
-Then, navigate to `http://localhost:8000/chat/` in your browser. Log in with the dummy credentials `admin` and `admin`.
+Either way, Cocai should be ready at `http://localhost:8000/chat/`. Log in with the dummy credentials `admin` and `admin`.
 
 ## Troubleshooting
 
