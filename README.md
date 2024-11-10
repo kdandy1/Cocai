@@ -148,6 +148,29 @@ Then run:
 brew install llvm
 ```
 
+If your `uv run phoenix serve` command fails with:
+
+```
+Traceback (most recent call last):
+  File "Cocai/.venv/bin/phoenix", line 5, in <module>
+    from phoenix.server.main import main
+  File "Cocai/.venv/lib/python3.11/site-packages/phoenix/__init__.py", line 12, in <module>
+    from .session.session import (
+  File ".venv/lib/python3.11/site-packages/phoenix/session/session.py", line 41, in <module>
+    from phoenix.core.model_schema_adapter import create_model_from_inferences
+  File ".venv/lib/python3.11/site-packages/phoenix/core/model_schema_adapter.py", line 11, in <module>
+    from phoenix.core.model_schema import Embedding, Model, RetrievalEmbedding, Schema
+  File ".venv/lib/python3.11/site-packages/phoenix/core/model_schema.py", line 554, in <module>
+    class ModelData(ObjectProxy, ABC):  # type: ignore
+TypeError: metaclass conflict: the metaclass of a derived class must be a (non-strict) subclass of the metaclasses of all its bases
+```
+
+then you can work around the problem for now by [serving Arize Phoenix from a Docker container](https://docs.arize.com/phoenix/deployment/docker):
+
+```shell
+docker run -p 6006:6006 -p 4317:4317 -i -t arizephoenix/phoenix:latest
+```
+
 # License
 
 The software itself is licensed under AGPL-3.0.
