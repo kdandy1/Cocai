@@ -37,6 +37,35 @@ Thanks to the chain-of-thought (CoT) visualization feature, you can unfold the t
 
 ### Pre-requisites
 
+There are a couple of things you have to do manually before you can start using the chatbot.
+
+1. Clone the repository ([how](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)).
+2. **Install the required binary, standalone programs**. These are not Python packages, so they aren't managed by `pyproject.toml`.
+3. **Self-serve a text embedding model**. This model "translates" your text into numbers, so that the computer can understand you.
+4. **Choose a way to serve a large language model (LLM)**. You can either use OpenAI's API or self-host a local LLM with Ollama.
+5. **Prepare a CoC module**. A "CoC module" is also known as a CoC scenario, campaign, or adventure. It comes in the form of a booklet. Some CoC modules come with their own rulebooks. Since this project is just between the user and the chatbot, let's choose a single-player module.
+6. **Initialize secrets**.
+
+No need to explicitly install Python packages. `uv`, the package manager of our choice, will implicitly install the required packages when you boot up the chatbot for the first time.
+
+#### Install the required binary programs
+
+These are the binary programs that you need to have ready before running Cocai:
+- Install [`just`](https://github.com/casey/just), a command runner. I use this because I always tend to forget the exact command to run.
+- Written in Python, this project uses the Rust-based package manager [`uv`](https://docs.astral.sh/uv/). It does not require you to explicitly create a virtual environment.
+- Install minIO. It allows Chainlit -- our frontend framework -- to persist data.
+- As aforementioned, if you decide to self-host a LLM, install Ollama.
+
+If you are on macOS, you can install these programs using Homebrew:
+
+```shell
+brew install just uv minio ollama
+```
+
+Optionally, also install [Stable Diffusion Web UI][sdwu]. This allows the chatbot to generate illustrations.
+
+[sdwu]: https://github.com/AUTOMATIC1111/stable-diffusion-webui
+
 #### Self-serve an embedding model
 
 Ensure that you have a local Ollama server running:
@@ -60,24 +89,6 @@ With the absence of an OpenAI API key, the chatbot will default to using [Ollama
 - If you want to use a different model that does not support function-calling, that's also possible. Revert [this commit][tc], so that you can use the ReAct paradigm to simulate function-calling capabilities with a purely semantic approach.
 
 [tc]: https://github.com/StarsRail/Cocai/commit/13d777767d1dd96024021c085247525ec52b79ba
-
-#### Install programs
-
-These are the binary programs that you need to have ready before running Cocai:
-- Install [`just`](https://github.com/casey/just), a command runner. I use this because I always tend to forget the exact command to run.
-- Written in Python, this project uses the Rust-based package manager [`uv`](https://docs.astral.sh/uv/). It does not require you to explicitly create a virtual environment.
-- Install minIO. It allows Chainlit -- our frontend framework -- to persist data.
-- As aforementioned, if you decide to self-host a LLM, install Ollama.
-
-If you are on macOS, you can install these programs using Homebrew:
-
-```shell
-brew install just uv minio ollama
-```
-
-Optionally, also install [Stable Diffusion Web UI][sdwu]. This allows the chatbot to generate illustrations.
-
-[sdwu]: https://github.com/AUTOMATIC1111/stable-diffusion-webui
 
 #### Prepare a CoC module
 Unsure which to pick? Start with [_“Clean Up, Aisle Four!”_][a4] by [Dr. Michael C. LaBossiere][mc].
