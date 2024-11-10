@@ -113,6 +113,11 @@ MINIO_ACCESS_KEY="foo"
 MINIO_SECRET_KEY="bar"
 ```
 
+Optionally, if you want to enable the chatbot to search the internet, you can provide a Tavily API key. Add `TAVILY_API_KEY=...` to `.env`.
+
+Optionally, if you prefer to use OpenAI ("GPT") as your LLM, add `OPENAI_API_KEY=...` to `.env`.
+
+Optionally, if you prefer to use a hosted open LLM, you can try [Together.ai](https://www.together.ai/). Add `TOGETHER_AI_API_KEY=...` to `.env`.
 
 ### Running the Chatbot
 
