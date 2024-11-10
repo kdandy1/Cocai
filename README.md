@@ -106,7 +106,9 @@ You'll need it in Markdown format, though. If you can only find the PDF edition,
 
 Run `chainlit create-secret` to generate a JWT token. Follow the instructions to add the secret to `.env`.
 
-Start serving minIO for the first time by running `minio server .minio/`. Then navigate to `http://127.0.0.1:57393/access-keys` and create a new access key. Add the access key and secret key to `.env`:
+Start serving minIO for the first time by running `minio server .minio/`. Then navigate to `http://127.0.0.1:57393/access-keys` and create a new access key. (You may need to log in first. The default credentials can be found in [their official documentation][mod].) Add the access key and secret key to `.env`:
+
+[mod]: https://min.io/docs/minio/linux/reference/minio-server/settings/root-credentials.html#id1
 
 ```toml
 MINIO_ACCESS_KEY="foo"
