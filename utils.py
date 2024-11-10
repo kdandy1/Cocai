@@ -5,8 +5,8 @@ from typing import Any, Dict, Union
 
 import boto3
 import chainlit.data as cl_data
-from chainlit.data.base import BaseStorageClient
 from chainlit.data.sql_alchemy import SQLAlchemyDataLayer
+from chainlit.data.storage_clients.base import BaseStorageClient
 from chainlit.logger import logger
 
 # If Python’s builtin readline module is previously loaded, elaborate line editing and history features will be available.
