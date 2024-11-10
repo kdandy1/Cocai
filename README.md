@@ -121,6 +121,8 @@ In the easy way, **simply run `just serve-all`**. This will start all the requir
 
 [tmx]: https://en.wikipedia.org/wiki/Terminal_multiplexer
 
+<img width="1278" alt="image" src="https://github.com/user-attachments/assets/d7db810d-4de0-432d-87f2-affc14e1daa9">
+
 In the hard way, you want to create a separate terminal for each command:
 1. Start serving **Ollama** (for locally inferencing embedding & language models) by running `ollama serve`. It should be listening at `http://localhost:11434/v1`.
 2. Start serving **minIO** (for persisting data for our web frontend) by running `minio server .minio/`.
