@@ -1,4 +1,5 @@
 .chainlit/data.db
+.chainlit/translations/
 
 chroma_db/
 llamaIndex_storage/
