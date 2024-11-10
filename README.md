@@ -145,3 +145,20 @@ just serve-all
 ```
 
 Then, navigate to `http://localhost:8000/chat/` in your browser. Log in with the dummy credentials `admin` and `admin`.
+
+## Troubleshooting
+
+If you see:
+
+```
+  File ".../llvmlite-0.43.0.tar.gz/ffi/build.py", line 142, in main_posix
+    raise RuntimeError(msg) from None
+RuntimeError: Could not find a `llvm-config` binary. There are a number of reasons this could occur, please see: https://llvmlite.readthedocs.io/en/latest/admin-guide/install.html#using-pip for help.
+error: command '.../bin/python' failed with exit code 1
+```
+
+Then run:
+
+```shell
+brew install llvm
+```
