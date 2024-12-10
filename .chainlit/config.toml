@@ -92,29 +92,29 @@ custom_meta_image_url = "public/logo_light.png"
     #font_family = "Inter, sans-serif"
 # Override default MUI light theme. (Check theme.ts)
 [UI.theme.light]
-    #background = "#FAFAFA"
-    #paper = "#FFFFFF"
+    background = "#FAFAFA"
+    paper = "#FFFFFF"
 
     [UI.theme.light.primary]
-        #main = "#F80061"
-        #dark = "#980039"
-        #light = "#FFE7EB"
+        main = "#F80061"
+        dark = "#980039"
+        light = "#FFE7EB"
     [UI.theme.light.text]
-        #primary = "#212121"
-        #secondary = "#616161"
+        primary = "#212121"
+        secondary = "#616161"
 
 # Override default MUI dark theme. (Check theme.ts)
 [UI.theme.dark]
-    #background = "#FAFAFA"
-    #paper = "#FFFFFF"
+    background = "#2D3142"
+    paper = "#422d31"
 
     [UI.theme.dark.primary]
-        #main = "#F80061"
-        #dark = "#980039"
-        #light = "#FFE7EB"
+        main = "#CC2D35"
+        dark = "#2D3142"
+        light = "#058ED9"
     [UI.theme.dark.text]
-        #primary = "#EEEEEE"
-        #secondary = "#BDBDBD"
+        primary = "#E1DAAE"
+        secondary = "#FFA0F9"
 
 [meta]
 generated_by = "1.1.402"
