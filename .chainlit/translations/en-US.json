@@ -37,7 +37,7 @@
                 "settings": "Settings",
                 "expandMessages": "Expand Messages",
                 "hideChainOfThought": "Hide Chain of Thought",
-                "darkMode": "Dark Mode"
+                "darkMode": "Accessible Dark Mode"
             },
             "detailsButton": {
                 "using": "Using",
